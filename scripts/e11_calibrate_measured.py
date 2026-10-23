@@ -30,7 +30,7 @@ from e2_twin_calibration import BOUNDS
 from tftsim import PAPER_SETS, THETA_ALL, ConvergenceError, Geometry
 from tftsim.calib import CurveModel, log_residual_problem
 from tftsim.metrics import I_FLOOR, extract, objective_J
-from tftsim.params import theta_scale, theta_vector, with_theta
+from tftsim.params import Material, theta_scale, theta_vector, with_theta
 
 
 def load_meas(path, set_, L=1.0):
@@ -69,10 +69,13 @@ def main():
     ap.add_argument("--floor", type=float, default=1e-10, help="measured points below this are noise-floor dominated and not fitted")
     ap.add_argument("--max_nfev", type=int, default=25)
     ap.add_argument("--no_holdout", action="store_true")
+    ap.add_argument("--nc", type=float, default=None, help="material: effective conduction-band DOS (cm^-3), default 5e18")
+    ap.add_argument("--eps_ch", type=float, default=None, help="material: channel relative permittivity, default 10")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
     out = outdir(args.out)
     clock = Timer()
+    mat = Material(**{k: v for k, v in (("Nc_cm3", args.nc), ("eps_ch", args.eps_ch)) if v is not None})
 
     base = PAPER_SETS["w4" if args.set == "4W" else "step5"]
     start_theta = {}
@@ -106,7 +109,7 @@ def main():
             m_vg, m_i = m_vg[keep], m_i[keep]
         meas[vd] = np.interp(vgs, m_vg, m_i, left=np.nan, right=np.nan)          # measured on the fit grid
         meas[vd] = np.where(np.isfinite(meas[vd]) & (meas[vd] >= args.floor), meas[vd], 1e-30)
-    model = CurveModel(base, names, vds=(0.05, 1.0), vgs=vgs)
+    model = CurveModel(base, names, vds=(0.05, 1.0), vgs=vgs, mat=mat)
     fun_all, jac_all, masks = log_residual_problem(model, meas, args.sigma, th0, scale)
     nfix = len(fixed)
     lb = np.array([(BOUNDS[n][0] - th0[k]) / scale[k] for k, n in enumerate(free)])
@@ -134,7 +137,7 @@ def main():
     # ---- full-resolution evaluation, metrics, J
     del model
     vfull = vg_grid(args.vgmin, 2.0, 0.05)
-    _, cv = sweep_device(pfit, Geometry(), vds=(0.05, 1.0), vgs=vfull)
+    _, cv = sweep_device(pfit, Geometry(), vds=(0.05, 1.0), vgs=vfull, mat=mat)
     mc = {}
     for vd in (0.05, 1.0):
         m_vg, m_i = meas_all[vd]
@@ -146,7 +149,7 @@ def main():
     if args.set == "2W" and not args.no_holdout:
         for geom, vds, tag in ((Geometry(), (0.1, 0.2, 0.5), "L1"), (Geometry(L_um=2.0), (0.05, 1.0), "L2")):
             try:
-                _, hc = sweep_device(pfit, geom, vds=vds, vgs=vfull)
+                _, hc = sweep_device(pfit, geom, vds=vds, vgs=vfull, mat=mat)
             except ConvergenceError as exc:
                 ho[tag] = {"error": str(exc)}
                 continue
@@ -155,7 +158,8 @@ def main():
                 if vd in mh:
                     ho[f"{tag}_VD{vd:g}"] = compare(*hc[vd], *mh[vd])
                     ho[f"{tag}_VD{vd:g}"]["curve"] = hc[vd][1]
-    summary = {"set": args.set, "names": names, "free": free, "fixed": fixed, "sigma_dec": args.sigma,
+    summary = {"set": args.set, "material": {"Nc_cm3": mat.Nc_cm3, "eps_ch": mat.eps_ch},
+               "names": names, "free": free, "fixed": fixed, "sigma_dec": args.sigma,
                "theta_hat": dict(zip(names, th.tolist())), "std_eff": dict(zip(free, std.tolist())), "sigma_eff": float(sig_eff),
                "chi2": chi2, "n_res": int(r.size), "dof": dof, "rms_dec": float(args.sigma * np.sqrt(chi2 / r.size)),
                "J": J["J"], "terms": J["terms"], "cal": cmp_cal, "holdout": ho, "nfev": int(res.nfev), "status": int(res.status),
@@ -165,6 +169,7 @@ def main():
              f"- fixed: {fixed if fixed else 'Qf only (degenerate with WF)'}; start: "
              f"{(os.path.relpath(args.start, ROOT) if args.start and os.path.exists(args.start) else args.start) or 'paper set'}; "
              f"fitted points: ID ≥ {args.floor:g} A, VG step {args.step} V",
+             f"- material: Nc = {mat.Nc_cm3:.3g} cm⁻³, ε_ch = {mat.eps_ch:g}" + (" (defaults)" if mat == Material() else " (changed)"),
              f"- χ² = {chi2:.1f} on {r.size} residuals (σ = {args.sigma} dec) → RMS misfit {summary['rms_dec']:.4f} dec; σ_eff = {sig_eff:.4f} dec",
              f"- J (paper weights, our a_i) = {J['J']:.3f}", "", "| parameter | value | 1σ (σ_eff) |", "|---|---|---|"]
     for k, n in enumerate(names):

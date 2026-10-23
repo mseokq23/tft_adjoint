@@ -62,7 +62,7 @@ python scripts/digitize_check.py     # 판독점을 원 그림 위에 겹쳐 그
 | `scripts/e5b_merge_profiles.py` | 나눠 돌린 profile 결과 병합(표·그림) | `results/e5_nd` |
 | `scripts/e6_dos_detectability.py` | E6 에너지 구간별 DOS 검출 한계(교란 파라미터 profiling 포함)와 페르미 준위 창 | `results/e6` |
 | `scripts/e7_oed_cv_tch.py` | E7 준정적 C–V, 채널 두께 변형까지 포함한 확장 OED | `results/e7` |
-| `scripts/e8_trap_type_equivalence.py` | E8 donor형 DOS ≡ acceptor형 DOS + 균일 고정전하(ND,eff) 수치 증명(I–V, C–V) | `results/e8` |
+| `scripts/e8_trap_type_equivalence.py` | E8 donor형 DOS ≡ acceptor형 DOS + 균일 고정전하(ND,eff) 수치 증명(I–V, C–V). `--cases thickness`: 논문 밖 두께(t_IWO 5·7 nm, t_ox 14 nm)에서도 같은지 | `results/e8`, `e8_thickness` |
 | `scripts/e9_discrimination_test.py` | E9 E5에서 구분되지 않던 세트들을 추천 측정(t_IWO 7 nm, t_ox 14 nm, C–V)이 기각하는지 비선형 확인 | `results/e9`, `e9a`, `e9b` |
 | `scripts/fig_abstract.py` | 초록용 4패널 그림(결과 파일만 읽음) | `results/fig_abstract.png` |
 
@@ -74,9 +74,12 @@ python scripts/digitize_check.py     # 판독점을 원 그림 위에 겹쳐 그
 | `scripts/digitize_raster.py`, `scripts/digitize_paper.py` | 비트맵에서 실측 곡선 추출(반투명 마커 색 + 0.05 V 측정 격자), 그림 간 일치도 | `data/meas.csv`, `data/meas_panels.csv`, `data/digitize/consistency.md` |
 | `scripts/digitize_check.py` | 추출한 곡선을 원래 그림 위에 다시 그려 육안 확인 | `data/digitize/check_*.png`(미포함) |
 | `scripts/e10_measured_comparison.py` | E10 논문 파라미터를 DEVSIM에 넣었을 때 실측과의 차이(J, Vth, SS, Ion) | `results/e10` |
-| `scripts/e11_calibrate_measured.py` | E11 실측 곡선에 우리 모델을 adjoint-LM으로 보정, hold-out 실측 예측 | `results/e11_*` |
+| `scripts/e11_calibrate_measured.py` | E11 실측 곡선에 우리 모델을 adjoint-LM으로 보정, hold-out 실측 예측. `--fix`로 profile·교차 시험, `--nc`·`--eps_ch`로 재료 상수 변경 | `results/e11_*`, `e15_wta`, `e16_nc2e18`, `e17_cross` |
 | `scripts/e12_profile_measured.py` | E12 실측 데이터 기준 ND,eff profile likelihood | `results/e12_nd` |
 | `scripts/fig_measured.py` | 실측 비교 4패널 그림 | `results/fig_measured.png` |
+| `scripts/e13_measured_discrimination.py` | E13 실측 보정 등가 세트(E12)가 추천 측정(t_IWO 7 nm, t_ox 14 nm, C–V)에서는 서로 다른 값을 예측하는지 | `results/e13` |
+| `scripts/e14_transfer_test_audit.py` | E14 논문 지표(avg/max ΔVth·ΔIon)로 본 전달 시험 판정표, 시험별 등가 세트 예측 퍼짐, 선형 예측 σ/잡음 비 (시뮬레이션 없음) | `results/e14` |
+| `scripts/fig_core_claim.py` | 핵심 주장 4패널 그림(같은 곡선, 평평한 profile, 시험별 예측 차이, 선형 정보량) | `results/fig_core_claim.png` |
 | `scripts/digitize_utils.py` | 벡터 그림 경로·WebPlotDigitizer CSV를 meas.csv 형식으로 바꾸는 초기 도구. 이 논문 그림은 비트맵이라 최종 데이터에는 쓰지 않음 | – |
 
 `scripts/_common.py`는 공용 도우미(경로, JSON 저장, 타이머)이고, `EXPERIMENT_LOG.md`에 실험별 핵심 수치가 있습니다.
@@ -118,6 +121,24 @@ python scripts/e11_calibrate_measured.py --set 4W --vgmin -0.7 --start results/s
 python scripts/e12_profile_measured.py --best results/e11_2W_v2/summary.json --values 18.35,17.85,17.35,16.85 --out results/e12_nd   # 점당 약 15–20분
 python scripts/e12_profile_measured.py --best results/e11_2W_v2/summary.json --values 19.05 --out results/e12_nd
 python scripts/fig_measured.py
+
+# 핵심 주장 보강 (2026-10-23)
+python scripts/e8_trap_type_equivalence.py --cases thickness --out results/e8_thickness            # 약 40분 (C–V 포함)
+python scripts/e11_calibrate_measured.py --set 2W --start results/e12_nd/log10_nd_eff_19.05/summary.json --max_nfev 40 --out results/e11_2W_v3   # 약 30분
+python scripts/e12_profile_measured.py --best results/e11_2W_v3/summary.json --report --out results/e12_nd   # 새 기준점으로 표 갱신
+# E13: 첫 실행은 모든 세트를 VG −1 V부터, 두 번째 실행은 두께 7 nm 채널만 VG −3 V부터 다시 계산 (세트당 약 8분 + 5분)
+python scripts/e13_measured_discrimination.py --recompute "t_IWO 7 nm" --vgmin_iv -3.0
+python scripts/e13_measured_discrimination.py --recompute "t_IWO 7 nm" --vgmin_iv -3.0
+python scripts/e11_calibrate_measured.py --set 2W --start results/e11_2W_v2/summary.json --fix w_ta=0.238 --out results/e15_wta/w_ta_0.238
+for v in 16.85 19.05; do
+  python scripts/e11_calibrate_measured.py --set 2W --start results/e12_nd/log10_nd_eff_$v/summary.json --fix log10_nd_eff=$v --nc 2e18 --out results/e16_nc2e18/log10_nd_eff_$v
+done
+python scripts/e11_calibrate_measured.py --set 2W --start results/e11_2W_v2/summary.json --fix log10_nd_eff=16.8055 --fix log10_n_gd=19.6435 \
+    --fix e_gd=0.08 --fix s_gd=0.224 --fix log10_n_ta=19.8921 --fix w_ta=0.238 --out results/e17_cross/dos_w4
+python scripts/e11_calibrate_measured.py --set 2W --start results/e11_2W_v2/summary.json --fix log10_nd_eff=18.4082 --fix log10_n_gd=19.3404 \
+    --fix e_gd=0.12 --fix s_gd=0.08 --fix log10_n_ta=19.8921 --fix w_ta=0.133 --out results/e17_cross/dos_step5
+python scripts/e14_transfer_test_audit.py                                                           # 수 초 (E5·E9·E12·E13·E15–E17 결과를 모아 판정표)
+python scripts/fig_core_claim.py
 ```
 
 참고:
