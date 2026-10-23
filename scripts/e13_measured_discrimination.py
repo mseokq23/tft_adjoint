@@ -1,7 +1,8 @@
 """E13 - are the parameter sets that fit the MEASURED data equally well physically different?
 
 E12 re-fitted our model to the measured 2 %-W calibration curves with ND,eff fixed between
-10^16.85 and 10^19.05 cm^-3: all sets fit equally well (Δχ²_eff ≤ 0.77) and give the same errors
+10^16.85 and 10^19.05 cm^-3: all sets fit equally well (Δχ²_eff ≤ 1.26 against the best free fit
+e11_2W_v3; ≤ 0.77 against the reference used before e11_2W_v3 existed) and give the same errors
 on the paper's transfer tests (drain bias VD = 0.1/0.2/0.5 V, channel length L = 2 µm). This script
 asks whether those sets nevertheless predict different results for measurements outside the paper's
 split - the measurements the OED analysis (E4/E7) recommends:
@@ -13,12 +14,12 @@ deviation from the reference set = lowest χ² on the measured data), next to th
 show on the paper's own transfer tests (from E12). Thresholds: digitisation noise 0.02 dec and the
 model error σ_eff of the measured fit (0.12 dec); for C-V 0.5 % and 2 % of C_ox·A.
 
-The thick-channel device is nearly normally-on (Vth below -1 V at VD = 1 V for most sets), so its
-curves are re-run from VG = -3 V:
+The thick-channel device turns on near the start of the default sweep (Vth = -0.77 ... -1.15 V at
+VD = 1 V across the sets), so its curves are re-run from VG = -3 V:
         python scripts/e13_measured_discrimination.py --recompute "t_IWO 7 nm" --vgmin_iv -3.0
 
 Usage:  python scripts/e13_measured_discrimination.py [--profile results/e12_nd]
-            [--best results/e11_2W_v2/summary.json] [--out results/e13] [--report]
+            [--best results/e11_2W_v3/summary.json,results/e11_2W_v2/summary.json] [--out results/e13] [--report]
 """
 from __future__ import annotations
 

@@ -49,7 +49,7 @@ Twin: ΔVth of each re-fitted set relative to the truth (truth included as 0). M
 
 ## 3. Linear check at the Step-5 truth: predictive 1σ of each test given the calibration data
 
-σ_pred/σ ≪ 1: every calibration-consistent parameter set predicts the same outcome within noise, so passing the test is automatic. Qf fixed (exactly degenerate with the gate WF). Calibration noise 0.02 dec.
+σ_pred/σ < 1: in the linear approximation the calibration-consistent parameter sets predict the same outcome within the test's noise, so passing the test says little about the parameters (a set at the edge of the 95 % region can deviate by about 2·σ_pred). Qf fixed (exactly degenerate with the gate WF). Calibration noise 0.02 dec.
 
 | test | noise σ | σ_pred/σ (RMS over the curve) | σ_pred/σ (max) | Δlog det F |
 |---|---|---|---|---|
@@ -66,7 +66,7 @@ Twin: ΔVth of each re-fitted set relative to the truth (truth included as 0). M
 
 ## 4. Robustness of the measured-data equivalence
 
-Reference χ²_min = 1589.4 (lowest default-material fit), σ_eff = 0.1189 dec. All fits stop at the evaluation limit, so each χ² is an upper bound of its profile value.
+Reference χ²_min = 1589.4 (lowest default-material fit), σ_eff = 0.1189 dec. Fits are limited to 25–40 evaluations, so each χ² is an upper bound of the minimum under its constraints.
 
 | check | fixed | free | χ² | Δχ²_eff | equivalent at 95 %? |
 |---|---|---|---|---|---|

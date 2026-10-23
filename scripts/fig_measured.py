@@ -3,10 +3,10 @@
 (a) 2 %-W calibration curves: measured vs calibrated DEVSIM model (and the paper's Step-5
     parameters in DEVSIM, to show that descriptor values do not transfer between simulators)
 (b) hold-out conditions predicted by the calibrated model vs measured
-(c) measured-data profile of ND,eff: Δχ² (σ_eff) and the hold-out error of every re-fitted set
-(d) 4 %-W data: best fit with ND,eff free vs ND,eff held at the 2 %-W value
+(c) measured-data profile of ND,eff: Δχ² (σ_eff) of every row of results/e12_nd
+(d) hold-out ΔVth (against the measured hold-out curves) of every row of the profile
 
-Reads results/e10, results/e11_2W_v2, results/e12_nd, results/e11_4W_* (whatever exists).
+Reads results/e10, results/e11_2W_v2 and results/e12_nd.
 Usage:  python scripts/fig_measured.py [--out results/fig_measured.png]
 """
 from __future__ import annotations
@@ -46,8 +46,6 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--fit2w", default="results/e11_2W_v2/summary.json")
     ap.add_argument("--profile", default="results/e12_nd/summary.json")
-    ap.add_argument("--fit4w_free", default="results/e11_4W_v2/summary.json")
-    ap.add_argument("--fit4w_fixed", default="results/e11_4W_ndfix/summary.json")
     ap.add_argument("--out", default="results/fig_measured.png")
     args = ap.parse_args()
     meas = load_meas()

@@ -2,7 +2,8 @@
 
 (a) Profile likelihood of ND,eff: RMS deviation of the re-fitted calibration curves
     and of the predicted paper hold-out curves, against the digitisation noise.
-(b) Calibration curves of parameter sets that differ ~30x in ND,eff.
+(b) Calibration curves of the two most distant sets the calibration data cannot tell apart
+    (χ² < 3.84; 1000x apart in ND,eff in the stored E5 profile), with the truth.
 (c) 1-sigma of ND,eff and the tail density N_TA after adding one measurement type.
 (d) DOS detectability vs energy (acceptor / donor) and the Fermi-level window.
 

@@ -14,14 +14,26 @@
 | step4 | 1.0 | -0.116 | 131.2 | 2.312e-04 |
 | step5 | 0.05 | -0.130 | 134.1 | 3.458e-05 |
 | step5 | 1.0 | -0.177 | 122.7 | 5.549e-04 |
+| w4 | 0.05 | +0.559 | 182.4 | 2.430e-05 |
+| w4 | 1.0 | +0.498 | 178.8 | 3.512e-04 |
 | step5_L2 | 0.05 | -0.076 | 141.8 | 1.747e-05 |
 | step5_L2 | 1.0 | -0.128 | 129.4 | 2.799e-04 |
 | step5_dosCoarse | 1.0 | -0.176 | 122.8 | 5.546e-04 |
 | step5_dosFine | 1.0 | -0.177 | 122.7 | 5.550e-04 |
 | step5_meshFine | 1.0 | -0.177 | 122.7 | 5.514e-04 |
 
+- w4: taken from results/e1_w4/summary.json (the original run failed: bias step failed near VG=-1.4749 VD=0.0500)
+
 ## Expected-direction checks
 
+- [x] Step1: lower S/D WF raises Ion
+- [x] Step2: gate WF 4.4->4.0 eV shifts Vth negative (~0.4 V)
+- [x] Step3: higher ND,eff shifts Vth negative
+- [x] Step4: DOS changes the subthreshold slope
+- [x] Step5: mu0 10->24 raises Ion
+- [x] 4%-W: positive Vth shift vs 2%-W (paper Fig. 7a)
+- [x] 4%-W: lower current vs 2%-W (paper Fig. 7a)
+- [x] L=2um: lower Ion than L=1um
 
 ## Numerical convergence (vs default step5, VD = 1 V)
 

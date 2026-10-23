@@ -14,8 +14,8 @@ equivalent parameter sets with the size of the errors the test is judged by. No 
    against the OED-recommended tests (E9 synthetic, E13 measured, if present).
 3. Linear version at the Step-5 truth (sensitivity rows of E3/E4/E7, Qf fixed): predictive 1σ of each
    test under the calibration-data posterior, σ_pred = sqrt(diag(S_test F_cal^-1 S_test^T)), relative
-   to the noise of that test. σ_pred/σ << 1 means every calibration-consistent set passes the test, so
-   the test carries no information about the parameters. (The log-det gain used in E3/E7 is
+   to the noise of that test. σ_pred/σ < 1 means the calibration-consistent sets predict the same outcome
+   within the test's noise, so the test carries little information about the parameters. (The log-det gain used in E3/E7 is
    Σ log(1 + λ_i(S_test F_cal^-1 S_test^T)/σ²), the same quantity aggregated.)
 
 Usage:  python scripts/e14_transfer_test_audit.py [--out results/e14]
@@ -247,8 +247,9 @@ def main():
     lin = linear_predictive()
     res["linear"] = lin
     lines += ["## 3. Linear check at the Step-5 truth: predictive 1σ of each test given the calibration data", "",
-              "σ_pred/σ ≪ 1: every calibration-consistent parameter set predicts the same outcome within noise, so passing the "
-              "test is automatic. Qf fixed (exactly degenerate with the gate WF). Calibration noise 0.02 dec.", "",
+              "σ_pred/σ < 1: in the linear approximation the calibration-consistent parameter sets predict the same outcome "
+              "within the test's noise, so passing the test says little about the parameters (a set at the edge of the 95 % "
+              "region can deviate by about 2·σ_pred). Qf fixed (exactly degenerate with the gate WF). Calibration noise 0.02 dec.", "",
               "| test | noise σ | σ_pred/σ (RMS over the curve) | σ_pred/σ (max) | Δlog det F |", "|---|---|---|---|---|"]
     for name, r in lin.items():
         lines.append(f"| {name} | {r['noise']} | {r['rms_ratio']:.2f} | {r['max_ratio']:.2f} | {r['dlogdet']:.1f} |")

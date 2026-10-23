@@ -3,13 +3,15 @@
 (a) two parameter sets 160x apart in ND,eff, both fitted to the measured calibration curves: same
     calibration curves and same transfer-test curve (L = 2 µm)
 (b) profile of ND,eff: Δχ² of the calibration fit (measured data, σ_eff; synthetic twin, σ = 0.02 dec)
-(c) the same measured-fit sets: differences of their predicted Vth (relative to the lowest-χ² set) for
+(c) the same measured-fit sets: spread of their predicted Vth (each test centred on the median set) for
     the paper's five transfer tests and for the two recommended tests (thicker channel / gate oxide)
 (d) linear check at the twin truth: predictive 1σ of each test given the calibration data, in units
-    of the test's own noise (< 1: the test is passed automatically by any calibration-consistent set)
+    of the test's own noise (< 1: in the linear approximation the calibration-consistent sets agree
+    within the test's noise)
 
-Reads results/e5_nd, e11_2W_v2, e12_nd, e13, e14 (no simulation).
-Usage:  python scripts/fig_core_claim.py [--best results/e11_2W_v2/summary.json] [--out results/fig_core_claim.png]
+Reads results/e5_nd, e11_2W_v3, e11_2W_v2, e12_nd, e13, e14 (no simulation).
+Usage:  python scripts/fig_core_claim.py [--best results/e11_2W_v3/summary.json,results/e11_2W_v2/summary.json]
+            [--out results/fig_core_claim.png]
 """
 from __future__ import annotations
 

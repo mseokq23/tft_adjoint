@@ -253,7 +253,46 @@
       }
     },
     "w4": {
-      "error": "bias step failed near VG=-1.4749 VD=0.0500"
+      "params": {
+        "wf_sd": 4.16,
+        "wf_gate": 4.45,
+        "qf": -1000000000000.0,
+        "nd_eff": 6.39e+16,
+        "mu0": 24.0,
+        "dos_on": true,
+        "n_gd": 4.4e+19,
+        "e_gd": 0.08,
+        "s_gd": 0.224,
+        "n_ta": 7.8e+19,
+        "w_ta": 0.238
+      },
+      "L_um": 1.0,
+      "device": {
+        "nodes": 5889,
+        "dos_levels": 40,
+        "mesh_scale": 1.0,
+        "solver": "umfpack",
+        "qf_area_check": 1.0000000000000002,
+        "n_solves": 194,
+        "t_solve_s": 120.289
+      },
+      "time_s": 221.48957813700008,
+      "metrics": {
+        "0.05": {
+          "vth": 0.5587259288910275,
+          "ss_mVdec": 182.39480800841554,
+          "ion": 2.429580063165117e-05,
+          "log10_ion": -4.61446878484222,
+          "vg_ion": 2.5
+        },
+        "1.0": {
+          "vth": 0.49757944634268675,
+          "ss_mVdec": 178.78532664096983,
+          "ion": 0.00035116427127126896,
+          "log10_ion": -3.4544896772166007,
+          "vg_ion": 2.5
+        }
+      }
     },
     "step5_L2": {
       "params": {
@@ -403,7 +442,40 @@
       }
     }
   },
-  "checks": [],
+  "checks": [
+    [
+      "Step1: lower S/D WF raises Ion",
+      true
+    ],
+    [
+      "Step2: gate WF 4.4->4.0 eV shifts Vth negative (~0.4 V)",
+      true
+    ],
+    [
+      "Step3: higher ND,eff shifts Vth negative",
+      true
+    ],
+    [
+      "Step4: DOS changes the subthreshold slope",
+      true
+    ],
+    [
+      "Step5: mu0 10->24 raises Ion",
+      true
+    ],
+    [
+      "4%-W: positive Vth shift vs 2%-W (paper Fig. 7a)",
+      true
+    ],
+    [
+      "4%-W: lower current vs 2%-W (paper Fig. 7a)",
+      true
+    ],
+    [
+      "L=2um: lower Ion than L=1um",
+      true
+    ]
+  ],
   "convergence": {
     "step5_dosCoarse": {
       "dVth_mV": 0.6717272883300096,
@@ -422,5 +494,11 @@
     }
   },
   "meas": {},
-  "wall_s": 1761.8663691230001
+  "wall_s": 1761.8663691230001,
+  "merged": {
+    "w4": {
+      "from": "results/e1_w4/summary.json",
+      "original_run_error": "bias step failed near VG=-1.4749 VD=0.0500"
+    }
+  }
 }

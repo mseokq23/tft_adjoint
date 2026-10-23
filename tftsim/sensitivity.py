@@ -32,7 +32,9 @@ class ScaledLU:
     The Newton matrix mixes potentials (V) and electron densities (up to ~1e20
     cm^-3); a plain sparse LU loses ~5-6 digits in the output component. With
     As = Dr J Dc factorised and two refinement sweeps, adjoint and forward
-    results agree to ~1e-10 (see e0_gradient_check.py).
+    results agree normwise to 1e-11 - 1e-9 at and above threshold and to ~2e-6 in
+    deep subthreshold, where small components (e.g. dID/dWF_SD) differ by up to
+    ~4e-3 relative (results/e0, gradients.csv).
     """
 
     def __init__(self, J, refine: int = 2):

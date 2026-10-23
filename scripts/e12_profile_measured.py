@@ -6,9 +6,10 @@ best fit (continuation: each fit starts from the previous one). Then compares
   * the fitted sets' errors at the paper's hold-out conditions against the MEASURED hold-out curves.
 
 Usage:
-  python scripts/e12_profile_measured.py --best results/e11_2W/summary.json --param log10_nd_eff \
-      --values 17.0,17.5,18.0,19.0 --out results/e12_nd
-  python scripts/e12_profile_measured.py --best results/e11_2W/summary.json --report --out results/e12_nd
+  python scripts/e12_profile_measured.py --best results/e11_2W_v2/summary.json --param log10_nd_eff \
+      --values 18.35,17.85,17.35,16.85 --out results/e12_nd
+  python scripts/e12_profile_measured.py --best results/e11_2W_v3/summary.json --report --out results/e12_nd
+(the stored table uses the longer free fit e11_2W_v3 as the best fit; see README)
 """
 from __future__ import annotations
 

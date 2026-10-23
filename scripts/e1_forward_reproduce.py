@@ -10,11 +10,15 @@ If digitized measurements are available, pass --meas data/meas.csv with columns
 set,L_um,vd,vg,id (A) to compute metric errors and the objective J (own a_i).
 
 Usage:  python scripts/e1_forward_reproduce.py [--quick] [--out results/e1]
+        python scripts/e1_forward_reproduce.py --only w4 --out results/e1_w4     (re-run one set)
+        python scripts/e1_forward_reproduce.py --report --merge results/e1_w4/summary.json
+            (rebuild results/e1/summary.* with the separately run 4%-W set; no simulation)
 """
 from __future__ import annotations
 
 import argparse
 import csv
+import json
 from dataclasses import replace
 
 from _common import HAVE_MPL, Timer, dump_json, np, outdir, vg_grid
@@ -50,14 +54,88 @@ def load_meas(path):
     return out
 
 
+def direction_checks(results):
+    """Expected-direction checks against the paper's narrative, and numerical-convergence deltas.
+    A check is skipped (not failed) when one of its runs is missing."""
+    def m(name, vd=1.0):
+        return results[name]["metrics"][str(vd)]
+    check_defs = [
+        ("Step1: lower S/D WF raises Ion", lambda: m("step1")["ion"] > m("step0")["ion"]),
+        ("Step2: gate WF 4.4->4.0 eV shifts Vth negative (~0.4 V)", lambda: m("step2")["vth"] < m("step1")["vth"]),
+        ("Step3: higher ND,eff shifts Vth negative", lambda: m("step3")["vth"] < m("step2")["vth"]),
+        ("Step4: DOS changes the subthreshold slope", lambda: abs(m("step4")["ss_mVdec"] - m("step3")["ss_mVdec"]) > 1.0),
+        ("Step5: mu0 10->24 raises Ion", lambda: m("step5")["ion"] > m("step4")["ion"]),
+        ("4%-W: positive Vth shift vs 2%-W (paper Fig. 7a)", lambda: m("w4")["vth"] > m("step5")["vth"]),
+        ("4%-W: lower current vs 2%-W (paper Fig. 7a)", lambda: m("w4")["ion"] < m("step5")["ion"]),
+        ("L=2um: lower Ion than L=1um", lambda: m("step5_L2")["ion"] < m("step5")["ion"]),
+    ]
+    checks = []
+    for txt, fn in check_defs:
+        try:
+            checks.append((txt, bool(fn())))
+        except KeyError:
+            pass
+    convd = {}
+    for name in ("step5_dosCoarse", "step5_dosFine", "step5_meshFine"):
+        if name in results and "metrics" in results[name]:
+            a, b = m(name), m("step5")
+            convd[name] = {"dVth_mV": 1e3 * (a["vth"] - b["vth"]), "dSS_mVdec": a["ss_mVdec"] - b["ss_mVdec"],
+                           "dlogIon_dec": a["log10_ion"] - b["log10_ion"]}
+    return checks, convd
+
+
+def write_summary(out, results, checks, convd, meas_report, wall_s, merged=None):
+    dump_json({"results": results, "checks": checks, "convergence": convd, "meas": meas_report,
+               "wall_s": wall_s, "merged": merged or {}}, f"{out}/summary.json")
+    lines = ["# E1 forward reproduction", "", "| run | VD (V) | Vth (V) | SS (mV/dec) | Ion (A) |", "|---|---|---|---|---|"]
+    for name, r in results.items():
+        for vd, mm in r.get("metrics", {}).items():
+            lines.append(f"| {name} | {vd} | {mm['vth']:+.3f} | {mm['ss_mVdec']:.1f} | {mm['ion']:.3e} |")
+    if merged:
+        lines += [""] + [f"- {name}: taken from {m['from']}" + (f" (the original run failed: {m['original_run_error']})"
+                                                               if m.get("original_run_error") else "")
+                         for name, m in merged.items()]
+    lines += ["", "## Expected-direction checks", ""] + [f"- [{'x' if ok else ' '}] {txt}" for txt, ok in checks]
+    lines += ["", "## Numerical convergence (vs default step5, VD = 1 V)", ""]
+    lines += [f"- {k}: dVth {v['dVth_mV']:+.2f} mV, dSS {v['dSS_mVdec']:+.2f} mV/dec, dlogIon {v['dlogIon_dec']:+.4f} dec"
+              for k, v in convd.items()]
+    with open(f"{out}/summary.md", "w") as f:
+        f.write("\n".join(lines) + "\n")
+
+
+def report_only(out, merge):
+    """Rebuild summary.md/json (checks, convergence) from stored results, no simulation.
+    --merge adds runs from other summary.json files (e.g. a separate --only w4 run)."""
+    s = json.load(open(f"{out}/summary.json"))
+    results, merged = s["results"], dict(s.get("merged", {}))
+    for path in merge:
+        for name, r in json.load(open(path))["results"].items():
+            if r.get("metrics"):
+                note = {"from": path}
+                if "error" in results.get(name, {}):              # keep why the original run has no result
+                    note["original_run_error"] = results[name]["error"]
+                elif isinstance(merged.get(name), dict):
+                    note = dict(merged[name], **note)
+                results[name] = r
+                merged[name] = note
+    checks, convd = direction_checks(results)
+    write_summary(out, results, checks, convd, s.get("meas", {}), s.get("wall_s"), merged)
+    print(f"{sum(ok for _, ok in checks)}/{len(checks)} direction checks pass")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="results/e1")
     ap.add_argument("--quick", action="store_true", help="coarser VG grid, no convergence study")
     ap.add_argument("--meas", default=None)
     ap.add_argument("--only", default=None, help="comma-separated run names to (re)run")
+    ap.add_argument("--report", action="store_true", help="rebuild the summary from stored results (no simulation)")
+    ap.add_argument("--merge", nargs="*", default=[], help="with --report: summary.json files of separate runs to merge")
     args = ap.parse_args()
     out = outdir(args.out)
+    if args.report:
+        report_only(out, args.merge)
+        return
     vgs = vg_grid(step=0.1) if args.quick else vg_grid()
     clock = Timer()
 
@@ -94,33 +172,7 @@ def main():
                         for vd, m in mets.items())
         print(f"[{name:16s}] {msg}  ({tm():.0f} s)")
 
-    # ----- expected-direction checks against the paper's narrative
-    def m(name, vd=1.0):
-        return results[name]["metrics"][str(vd)]
-    check_defs = [
-        ("Step1: lower S/D WF raises Ion", lambda: m("step1")["ion"] > m("step0")["ion"]),
-        ("Step2: gate WF 4.4->4.0 eV shifts Vth negative (~0.4 V)", lambda: m("step2")["vth"] < m("step1")["vth"]),
-        ("Step3: higher ND,eff shifts Vth negative", lambda: m("step3")["vth"] < m("step2")["vth"]),
-        ("Step4: DOS changes the subthreshold slope", lambda: abs(m("step4")["ss_mVdec"] - m("step3")["ss_mVdec"]) > 1.0),
-        ("Step5: mu0 10->24 raises Ion", lambda: m("step5")["ion"] > m("step4")["ion"]),
-        ("4%-W: positive Vth shift vs 2%-W (paper Fig. 7a)", lambda: m("w4")["vth"] > m("step5")["vth"]),
-        ("4%-W: lower current vs 2%-W (paper Fig. 7a)", lambda: m("w4")["ion"] < m("step5")["ion"]),
-        ("L=2um: lower Ion than L=1um", lambda: m("step5_L2")["ion"] < m("step5")["ion"]),
-    ]
-    checks = []
-    for txt, fn in check_defs:          # a check is skipped (not failed) when one of its runs is missing
-        try:
-            checks.append((txt, bool(fn())))
-        except KeyError:
-            pass
-
-    # ----- convergence deltas
-    convd = {}
-    for name in ("step5_dosCoarse", "step5_dosFine", "step5_meshFine"):
-        if name in results and "metrics" in results[name]:
-            a, b = m(name), m("step5")
-            convd[name] = {"dVth_mV": 1e3 * (a["vth"] - b["vth"]), "dSS_mVdec": a["ss_mVdec"] - b["ss_mVdec"],
-                           "dlogIon_dec": a["log10_ion"] - b["log10_ion"]}
+    checks, convd = direction_checks(results)
 
     # ----- optional comparison with digitized measurements
     meas_report = {}
@@ -131,8 +183,6 @@ def main():
             if key in curves_all:
                 meas_report[key] = objective_J(curves_all[key], mc)
 
-    dump_json({"results": results, "checks": checks, "convergence": convd, "meas": meas_report,
-               "wall_s": clock()}, f"{out}/summary.json")
     with open(f"{out}/curves.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["run", "vd", "vg", "id_A"])
@@ -140,16 +190,7 @@ def main():
             for vd, (vg, i) in cv.items():
                 for a, b in zip(vg, i):
                     w.writerow([name, vd, a, b])
-    lines = ["# E1 forward reproduction", "", "| run | VD (V) | Vth (V) | SS (mV/dec) | Ion (A) |", "|---|---|---|---|---|"]
-    for name, r in results.items():
-        for vd, mm in r.get("metrics", {}).items():
-            lines.append(f"| {name} | {vd} | {mm['vth']:+.3f} | {mm['ss_mVdec']:.1f} | {mm['ion']:.3e} |")
-    lines += ["", "## Expected-direction checks", ""] + [f"- [{'x' if ok else ' '}] {txt}" for txt, ok in checks]
-    lines += ["", "## Numerical convergence (vs default step5, VD = 1 V)", ""]
-    lines += [f"- {k}: dVth {v['dVth_mV']:+.2f} mV, dSS {v['dSS_mVdec']:+.2f} mV/dec, dlogIon {v['dlogIon_dec']:+.4f} dec"
-              for k, v in convd.items()]
-    with open(f"{out}/summary.md", "w") as f:
-        f.write("\n".join(lines) + "\n")
+    write_summary(out, results, checks, convd, meas_report, clock())
 
     if HAVE_MPL and curves_all:
         import matplotlib.pyplot as plt
