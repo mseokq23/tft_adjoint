@@ -24,9 +24,11 @@ Runs
      VD = 0.05 / 1 V, and the subthreshold slope without traps / with the tail only.
   2. The re-fitted twin sets of E5 (results/e5_nd/summary.json; theta fitted with DEVSIM) in the
      1-D model: RMS difference from the Step-5 truth on the calibration curves, dVth at L = 2 um,
-     and dVth for t_IWO = 5 / 7 nm and t_ox = 14 nm (VD = 1 V).
+     and dVth for t_IWO = 5 / 7 nm and t_ox = 14 nm (VD = 1 V). The 1-D model has no S/D contact,
+     so each set's WF_SD is ignored; sets whose WF_SD differs from Step 5 (10^18.9 and above)
+     reproduce the calibration curves less well here than in 2-D, presumably for that reason.
 
-Usage:  python scripts/aux_paosah_1d.py [--out results/aux_paosah_1d]      (about 10-20 min, 1 core)
+Usage:  python scripts/aux_paosah_1d.py [--out results/aux_paosah_1d]      (about 4 min)
 """
 from __future__ import annotations
 

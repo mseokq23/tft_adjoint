@@ -18,7 +18,7 @@ at a different value and the other descriptors free. Qf was held at the Step-5
 value because it is exactly degenerate with the gate WF.
 
   Sets A-E   ND,eff from 7.9e15 to 7.9e18 cm^-3 (1000x). They reproduce the
-             simulated Step-5 calibration curves within RMS <= 1.3e-3 decade, and
+             simulated Step-5 calibration curves within RMS 1.33e-3 decade at most, and
              their Vth at the five transfer conditions (L = 1 um at
              VD = 0.1/0.2/0.5 V; L = 2 um at VD = 0.05/1.0 V) stays within
              0.8 mV of Step 5.

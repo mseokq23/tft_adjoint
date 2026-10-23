@@ -110,7 +110,7 @@ def main():
             ys = [r["holdout"].get(k, {}).get("dVth_mV", np.nan) for r in rows]
             d.plot(x, ys, "o-", color=cols.get(k, INK2), lw=1.4, ms=4, label=k.replace("_", " "))
         d.axhspan(-46.2, 46.2, color=GRID, alpha=0.5, lw=0)
-        d.text(x[0], 41, "paper's own hold-out |ΔVth| ≤ 46 mV", fontsize=6.5, color=INK2, va="top")
+        d.text(x[0], 41, "paper's own hold-out max |ΔVth| 46.2 mV", fontsize=6.5, color=INK2, va="top")
         d.set_xlabel("log10 ND,eff (cm⁻³) of the re-fitted set")
         d.set_ylabel("hold-out ΔVth vs measured (mV)")
         d.set_title("(d) hold-out tests cannot tell the sets apart", loc="left")
