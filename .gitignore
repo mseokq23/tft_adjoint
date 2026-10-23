@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# run logs
+results/*_log.txt
+
+# third-party material: the paper PDF and the figure bitmaps extracted from it are not
+# redistributed (see scripts/extract_figs.py to regenerate them from your own copy)
+data/refs/
+data/figs/
+data/digitize/*.png

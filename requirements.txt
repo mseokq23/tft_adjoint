@@ -1,0 +1,8 @@
+# tested with Python 3.13.16 on Linux x86-64
+devsim==2.11.1
+mkl==2026.2.0       # BLAS/LAPACK that DEVSIM loads at import (x86-64 only; see README for other platforms)
+numpy==2.5.4
+scipy==1.18.1
+matplotlib==3.11.2
+pillow==13.0.0
+pymupdf==2.0        # only for scripts/extract_figs.py (re-digitising the paper figures)
