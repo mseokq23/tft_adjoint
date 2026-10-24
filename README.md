@@ -6,7 +6,7 @@
 - 가제(미확정): "Adjoint 민감도 기반 오픈소스 TCAD를 이용한 산화물 반도체 TFT 보정, 파라미터 식별가능성 분석 및 최적 측정조건 설계". 최종 제목은 아래 핵심 주장 중심으로 정합니다([6.3](#63-2단계--가치-판단)).
 - 핵심 주장: **드레인 바이어스·채널 길이 전달 시험(transfer test)을 통과해도 보정 파라미터는 하나로 정해지지 않는다.**
 - 기준 논문: G. Jeong et al., *Agentic TCAD Calibration Workflow for Oxide Semiconductor Transistors*, arXiv:2609.12184 v2 (2026-09-14).
-- 현재 단계(2026-10-24): 1단계 가설검증 실험(E0–E21: 결합 보정 E18, 일반 규칙 E19, 식별가능성 표 E20, 강건성 E21 포함)과 가치 판단(C1–C5, 선행연구 점검 포함)을 마쳐 초안 작성 조건을 충족했습니다. 초록 작성이 남았습니다([5장](#5-선행연구와의-관계), [6장](#6-앞으로-할-일--연구-완성을-위한-남은-작업)).
+- 현재 단계(2026-10-24): 1단계 가설검증 실험(E0–E21: 결합 보정 E18, 일반 규칙 E19, 식별가능성 표 E20, 강건성 E21 포함)과 가치 판단(C1–C5, 선행연구 점검 포함)을 마쳤고, 1쪽 초록 초안을 만들었습니다(원고는 비공개, 그림·숫자표·참고문헌은 [`docs/paper/`](docs/paper/README.md)). 남은 일은 초록 마무리와 전체 논문입니다([5장](#5-선행연구와의-관계), [6장](#6-앞으로-할-일--연구-완성을-위한-남은-작업)).
 - 새 세션에서 이어서 작업할 때는 [`docs/HANDOFF.md`](docs/HANDOFF.md)부터 읽으세요. 실험별 핵심 수치는 [`EXPERIMENT_LOG.md`](EXPERIMENT_LOG.md)에 있습니다.
 
 ## 목차
@@ -610,6 +610,12 @@ G. Jeong et al., arXiv:2609.12184 v2. LLM 에이전트가 Sentaurus TCAD 보정 
 - (c) 실측에 똑같이 맞는 7세트의 예측 Vth 퍼짐입니다(시험마다 중앙값 세트 기준, 각 세트의 전체 시뮬레이션 곡선에서 계산). 논문 전달 시험은 1–8 mV, 추천 시험(t_ox 14 nm, t_IWO 7 nm)은 133–376 mV입니다.
 - (d) 보정 데이터가 주어졌을 때 각 시험 예측의 σ ÷ 시험 잡음입니다(쌍둥이, 선형). 1 미만인 시험은 선형 근사에서 보정에 맞는 세트들이 잡음 안에서 같은 결과를 예측합니다.
 
+**[`results/fig_kcs_abstract.png`](results/fig_kcs_abstract.png)** — 1쪽 학회 초록용 1행 3패널입니다(`scripts/fig_kcs_abstract.py`, 설명은 [`docs/paper/README.md`](docs/paper/README.md)).
+
+- (a) ND,eff profile: 쌍둥이와 실측, 보정 곡선 2개와 드레인 바이어스 곡선 5개
+- (b) 실측 등가 7세트의 예측 Vth: 논문 전달 시험 대 t_ox 14 nm·t_IWO 7 nm
+- (c) 시험 32개의 예측 σ ÷ 잡음(E19): 수평·바이어스 시험 대 수직 구조 시험
+
 **[`results/fig_abstract.png`](results/fig_abstract.png)** — 쌍둥이 4패널입니다.
 
 - (a) ND,eff profile과 전달 시험 예측
@@ -761,12 +767,13 @@ C4 점검(2026-10-24, 아래 6.3)에서 "산화물 TFT TCAD 보정에서 드레�
 가치 판단을 통과하면 진행합니다.
 
 - **일정:**
-  - 10/28–11/02: 초안
+  - 10/24: 1쪽 초안(KCS 국문 양식 구성)과 초록 그림 완료. 저자·소속·사사는 비워 둠
+  - 10/28–11/02: 다듬기
   - 11/05: 숫자 최종 교차검증(독립 검증)과 저장소 갱신
   - 11/06: 최종본
   - 11/07: 제출
-- **그림:** `fig_core_claim` 개정판 1개(E18·E19 반영).
-- **숫자:** 이 README와 `EXPERIMENT_LOG.md`를 기준으로 합니다. 초록에 쓰는 숫자는 모두 `results/`의 파일로 거슬러 올라갈 수 있어야 합니다.
+- **그림:** [`results/fig_kcs_abstract.png`](results/fig_kcs_abstract.png) 1개(1행 3패널, E18·E19 반영; [`docs/paper/README.md`](docs/paper/README.md)).
+- **숫자:** 이 README와 `EXPERIMENT_LOG.md`를 기준으로 합니다. 초록에 쓰는 숫자는 모두 `results/`의 파일로 거슬러 올라갈 수 있어야 하며, [`docs/paper/key_numbers.md`](docs/paper/key_numbers.md)에 출처와 함께 모았습니다.
 - **서술 원칙:**
   - "최초(first)", "exact gradient", "LLM 에이전트보다 우수" 같은 표현은 쓰지 않습니다.
   - adjoint TCAD 선행(DEVSIM 2009, Charon/Sacado, Burger–Pinnau 2003, Khalil 1995)과 profile likelihood·sloppiness 방법(Raue 2009, Gutenkunst 2007)을 인용합니다.
@@ -885,6 +892,8 @@ python scripts/digitize_check.py     # 판독점을 원 그림 위에 겹쳐 그
 | `scripts/e13_measured_discrimination.py` | E13 실측 보정 등가 세트(E12)가 추천 측정(t_IWO 7 nm, t_ox 14 nm, C–V)에서는 다른 값을 예측하는지 | `results/e13` |
 | `scripts/e14_transfer_test_audit.py` | E14 논문 지표(avg/max ΔVth·ΔIon)로 본 전달 시험 판정표, 시험별 등가 세트 예측 퍼짐, 선형 예측 σ/잡음 비, E15–E17·E21(ε_ch) 강건성 표(시뮬레이션 없음) | `results/e14` |
 | `scripts/fig_core_claim.py` | 핵심 주장 4패널 그림 | `results/fig_core_claim.png` |
+| `scripts/fig_kcs_abstract.py` | 1쪽 학회 초록용 1행 3패널 그림(E5·E12·E13·E14·E18·E19 결과만 읽음) | `results/fig_kcs_abstract.png` |
+| `scripts/paper_numbers.py` | 초록·논문에 쓰는 핵심 수치를 저장된 결과에서 다시 계산해 출처와 함께 표로 만듦(시뮬레이션 없음) | `docs/paper/key_numbers.*` |
 | `scripts/e18_report.py` | E18 결합 보정 판정표: 2곡선 대 5곡선 profile(실측·쌍둥이), 등가 범위, 세트들이 예측한 Vth의 퍼짐(전체 곡선)과 L = 2 µm 측정 곡선의 공백 설명(시뮬레이션 없음) | `results/e18` |
 | `scripts/e19_design_rule.py` | E19 일반 규칙: 수평·바이어스 시험 16개 대 수직 구조 시험 16개의 선형 판정(σ_pred/σ, λ_max, q, 1σ 감소)과 E5 세트의 수평 시험 비선형 확인. `--report`는 시뮬레이션 없음 | `results/e19` |
 | `scripts/e20_identifiability_table.py` | E20 실측 결합 최적점(E18)에서 descriptor별 Fisher 1σ: 보정 데이터만 대 추천 측정(t_ox 14 nm, t_IWO 7 nm, C–V) 추가, 쌍둥이 값과 비교. `--report`는 시뮬레이션 없음 | `results/e20` |
@@ -898,6 +907,7 @@ python scripts/digitize_check.py     # 판독점을 원 그림 위에 겹쳐 그
 - `scripts/_common.py`: 공용 도우미(경로, JSON 저장, 타이머)
 - `EXPERIMENT_LOG.md`: 실험별 핵심 수치(시간순)
 - `docs/HANDOFF.md`: 새 세션에서 이어서 작업하기 위한 인계 문서(환경 복원, 규칙, 다음 작업 구현 메모)
+- `docs/paper/`: 초록·논문용 자료(핵심 수치표, 참고문헌 `references.bib`, 그림 목록과 서술 원칙)
 - `results/crosscheck/`: 교차 확인용 세트 표와 설명
 
 ## 10. 실행 (results/ 재현)
@@ -1015,6 +1025,8 @@ python scripts/e18_report.py
 python scripts/e19_design_rule.py --report --out results/e19
 python scripts/e20_identifiability_table.py --report --out results/e20
 python scripts/e21_report.py
+python scripts/fig_kcs_abstract.py
+python scripts/paper_numbers.py
 ```
 
 참고:

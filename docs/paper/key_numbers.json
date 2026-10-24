@@ -1,0 +1,303 @@
+[
+  {
+    "group": "A structural",
+    "key": "qf_wf_eig_ratio",
+    "text": "Qf \u2261 gate WF: Fisher eigenvalue ratio \u03bbmin/\u03bbmax = 2.2e-17",
+    "value": 2.235327087539272e-17,
+    "source": "results/e3/summary.json (base.eigvals)",
+    "note": "single gate-oxide thickness, Step-5 point"
+  },
+  {
+    "group": "A structural",
+    "key": "qf_per_1e11_mV",
+    "text": "Qf 1e11 cm\u207b\u00b2 \u2259 gate WF 6.3 mV",
+    "value": 6.333294862904739,
+    "source": "tftsim/params.py (t_ox, \u03b5_HfO2)",
+    "note": ""
+  },
+  {
+    "group": "A structural",
+    "key": "donor_acceptor_iv",
+    "text": "donor \u2261 acceptor + ND,eff: max |\u0394log10 ID| 3.6e-15 dec (7 curves), thickness variants 3.6e-15 dec",
+    "value": 3.552713678800501e-15,
+    "source": "results/e8/summary.json, results/e8_thickness/summary.json (cases)",
+    "note": ""
+  },
+  {
+    "group": "A structural",
+    "key": "donor_acceptor_cv",
+    "text": "donor \u2261 acceptor + ND,eff: max C\u2013V difference 1.7e-14 (rel.), thickness variants 8.1e-15",
+    "value": 1.720522236094967e-14,
+    "source": "results/e8*/summary.json (cv_max_rel)",
+    "note": ""
+  },
+  {
+    "group": "A structural",
+    "key": "paper_w4_step2",
+    "text": "paper 4%-W recalibration moved gate WF 4.00 \u2192 4.45 eV and Qf +1.59e+10 \u2192 -1.00e+12 cm\u207b\u00b2 together (exactly degenerate with one t_ox)",
+    "value": [
+      4.0,
+      4.45,
+      15900000000.0,
+      -1000000000000.0
+    ],
+    "source": "tftsim/params.py PAPER_SETS (from the reference paper, Sec. IV)",
+    "note": ""
+  },
+  {
+    "group": "B twin",
+    "key": "twin_profile_max",
+    "text": "twin profile: ND,eff 15.9\u201318.9 (\u00d71000), calibration \u03c7\u00b2 \u2264 0.284 (95 % threshold 3.84)",
+    "value": 0.28376046649751296,
+    "source": "results/e5_nd/summary.json (records)",
+    "note": ""
+  },
+  {
+    "group": "B twin",
+    "key": "twin_profile_rejected",
+    "text": "twin profile: \u03c7\u00b2 4.18 at 10^19.15, 187.8 at 10^19.4",
+    "value": [
+      4.179910212560123,
+      187.7940039065566
+    ],
+    "source": "results/e5_nd/summary.json",
+    "note": ""
+  },
+  {
+    "group": "B twin",
+    "key": "twin_transfer_dvth",
+    "text": "twin sets reproduce the paper's 5 transfer-test curves within |\u0394Vth| \u2264 0.76 mV",
+    "value": 0.7551784413405843,
+    "source": "results/e14/summary.json (synthetic)",
+    "note": ""
+  },
+  {
+    "group": "B twin",
+    "key": "twin_rejected_set_transfer",
+    "text": "the calibration-rejected 10^19.4 set still passes: max |\u0394Vth| 13.7 mV",
+    "value": 13.689223958898461,
+    "source": "results/e14/summary.json (synthetic 19.40)",
+    "note": ""
+  },
+  {
+    "group": "B twin",
+    "key": "paper_errors",
+    "text": "paper's transfer errors: drain avg/max 24.9/36.1 mV, length 27.4/46.2 mV",
+    "value": {
+      "drain": {
+        "vth_avg": 24.9,
+        "vth_max": 36.1,
+        "ion_avg": 0.013,
+        "ion_max": 0.022
+      },
+      "length": {
+        "vth_avg": 27.4,
+        "vth_max": 46.2,
+        "ion_avg": 0.05,
+        "ion_max": 0.062
+      }
+    },
+    "source": "results/e14/summary.json (paper; reference paper Sec. III)",
+    "note": ""
+  },
+  {
+    "group": "B twin",
+    "key": "twin_joint_max",
+    "text": "twin, five VD curves calibrated together: \u03c7\u00b2 \u2264 0.644 over \u00d71000",
+    "value": 0.6444719824962521,
+    "source": "results/e18/summary.json (twin_joint)",
+    "note": ""
+  },
+  {
+    "group": "B twin",
+    "key": "mechanism",
+    "text": "ND,eff 10^15.9 \u2192 10^18.9: gate WF moves +170 mV vs q\u00b7\u0394N\u00b7t_IWO/C_ox = +176 mV",
+    "value": [
+      169.91554605932268,
+      175.89894747288596
+    ],
+    "source": "results/e5_nd/summary.json (records.theta); tftsim/params.py",
+    "note": ""
+  },
+  {
+    "group": "C measured",
+    "key": "meas_profile_max",
+    "text": "measured profile: ND,eff 10^16.85\u201310^19.05 (\u00d7158), \u0394\u03c7\u00b2_eff \u2264 1.26 (\u03c7\u00b2_min 1589.4, \u03c3_eff 0.1189 dec)",
+    "value": 1.2644217489607392,
+    "source": "results/e12_nd/summary.json",
+    "note": ""
+  },
+  {
+    "group": "C measured",
+    "key": "meas_transfer_spread",
+    "text": "predicted transfer-test Vth spread over the 7 sets (full curves): L1_VD0.1 3.6, L1_VD0.2 1.2, L1_VD0.5 1.3, L2_VD0.05 8.2, L2_VD1 3.6 mV",
+    "value": {
+      "L1_VD0.1": 3.561806232779361,
+      "L1_VD0.2": 1.2399906399484735,
+      "L1_VD0.5": 1.3113483851491878,
+      "L2_VD0.05": 8.196944867159829,
+      "L2_VD1": 3.6058757904881418
+    },
+    "source": "results/e14/summary.json (spread.*.measured_mV)",
+    "note": ""
+  },
+  {
+    "group": "C measured",
+    "key": "model_error_vth",
+    "text": "model error \u03c3_eff in Vth: 13.2\u201314.7 mV (\u03c3_eff \u00d7 measured SS 123/111 mV/dec)",
+    "value": [
+      14.668831298378485,
+      13.224762430439897
+    ],
+    "source": "results/e11_2W_v3/summary.json; data/meas.csv",
+    "note": ""
+  },
+  {
+    "group": "C measured",
+    "key": "meas_thickness_spread",
+    "text": "same 7 sets, VD 1 V: t_ox 14 nm 133 mV, t_IWO 7 nm 376 mV; ND,eff ends only 47/126 mV",
+    "value": {
+      "all": {
+        "t_ox 14 nm VD=1": 133.1544270743751,
+        "t_IWO 7 nm VD=1": 376.4946058335288
+      },
+      "ends": {
+        "t_ox 14 nm": 47.21795635866916,
+        "t_IWO 7 nm": 125.71427639854494
+      }
+    },
+    "source": "results/e13/summary.json",
+    "note": "the largest differences are between v2 and v3 (different DOS)"
+  },
+  {
+    "group": "C measured",
+    "key": "meas_joint_max",
+    "text": "measured, five VD curves together: \u0394\u03c7\u00b2_eff \u2264 2.25; L 2 \u00b5m Vth spread 9.4/2.5 mV",
+    "value": 2.2451014597768575,
+    "source": "results/e18/summary.json (measured_joint, vth_spread_full_mV)",
+    "note": ""
+  },
+  {
+    "group": "C measured",
+    "key": "robustness",
+    "text": "robustness \u0394\u03c7\u00b2_eff: tail width at the paper's 4%-W value (2%-W data): [0.92]; Nc = 2e18 cm\u207b\u00b3 instead of 5e18 (vs the better of the two ends): [1.91, 0.0]; \u03b5_ch = 15 instead of 10 (vs the better of the two ends): [0.66, 0.0]; paper's 4%-W DOS and ND,eff, only WF_sd/WF_gate/\u00b50 fitted: [30.34]; paper's 2%-W (Step 5) DOS and ND,eff, only WF_sd/WF_gate/\u00b50 fitted: [13.48]",
+    "value": {
+      "tail width at the paper's 4%-W value (2%-W data)": [
+        0.92
+      ],
+      "Nc = 2e18 cm\u207b\u00b3 instead of 5e18 (vs the better of the two ends)": [
+        1.91,
+        0.0
+      ],
+      "\u03b5_ch = 15 instead of 10 (vs the better of the two ends)": [
+        0.66,
+        0.0
+      ],
+      "paper's 4%-W DOS and ND,eff, only WF_sd/WF_gate/\u00b50 fitted": [
+        30.34
+      ],
+      "paper's 2%-W (Step 5) DOS and ND,eff, only WF_sd/WF_gate/\u00b50 fitted": [
+        13.48
+      ]
+    },
+    "source": "results/e14/summary.json (robustness)",
+    "note": ""
+  },
+  {
+    "group": "C measured",
+    "key": "multistart",
+    "text": "6 free fits from different starts: \u0394\u03c7\u00b2_eff \u2264 1.10; N_TA spread 2.44 dec (\u00d7273), gate WF 182 mV, \u03c3_GD 0.177 eV; transfer-test Vth spread 1.9\u20134.9 mV",
+    "value": {
+      "dchi2_eff_max": 1.0965095330081749,
+      "spread": {
+        "wf_sd": 0.005954486593250152,
+        "wf_gate": 0.18171025249504424,
+        "log10_nd_eff": 0.5694918986338422,
+        "log10_mu0": 0.017958687815962326,
+        "log10_n_gd": 0.39042887254004555,
+        "e_gd": 0.1686453945617749,
+        "s_gd": 0.17707610477652547,
+        "log10_n_ta": 2.43573368272045,
+        "w_ta": 0.06164537843719349
+      },
+      "vth_spread_mV": {
+        "cal VD 0.05": 5.8410429498460985,
+        "cal VD 1": 1.9586178163177692,
+        "VD 0.1": 3.557653412857178,
+        "VD 0.2": 2.031209620551408,
+        "VD 0.5": 1.9451334891909369,
+        "L 2 \u00b5m VD 0.05": 4.890918961412353,
+        "L 2 \u00b5m VD 1": 2.7429036721665057
+      }
+    },
+    "source": "results/e21/summary.json",
+    "note": "all stopped at the evaluation limit"
+  },
+  {
+    "group": "C measured",
+    "key": "eps15",
+    "text": "\u03b5_ch = 15: 10^16.85 \u03c7\u00b2 1631.4 (\u03b5 10: 1634.0), 10^19.05 \u03c7\u00b2 1608.4 (\u03b5 10: 1606.3); ends \u0394\u03c7\u00b2_eff 0.66",
+    "value": [
+      1631.400342584849,
+      1608.4349589917458
+    ],
+    "source": "results/e21/summary.json (eps15)",
+    "note": ""
+  },
+  {
+    "group": "D design rule",
+    "key": "e19_ratio",
+    "text": "32 tests, predictive \u03c3 / noise (curve RMS): VD (L 1 \u00b5m) 0.25\u20130.41, L 0.43\u20130.86, t_ox 41\u2013210, t_IWO 92\u2013487",
+    "value": {
+      "VD (L 1 \u00b5m)": [
+        0.25343876228183737,
+        0.4069069710166016
+      ],
+      "L": [
+        0.42917414972072876,
+        0.8584799799673095
+      ],
+      "t_ox": [
+        40.59938335960709,
+        209.94806159841062
+      ],
+      "t_IWO": [
+        92.17046167006436,
+        487.4158024582161
+      ]
+    },
+    "source": "results/e19/summary.json (tests.*.rms_ratio)",
+    "note": ""
+  },
+  {
+    "group": "D design rule",
+    "key": "e14_linear",
+    "text": "paper's transfer tests 0.25\u20130.43, recommended tests 32\u2013239",
+    "value": [
+      0.25344060748664643,
+      0.42996376513643036,
+      32.30058629911783,
+      239.334955205186
+    ],
+    "source": "results/e14/summary.json (linear)",
+    "note": ""
+  },
+  {
+    "group": "D design rule",
+    "key": "e20_nd",
+    "text": "measured optimum (local, linear): ND,eff 1\u03c3 calibration only 7.30 dec (2 curves 8.00); + t_ox 14 nm, t_IWO 7 nm, C\u2013V 0.5 %: 0.176 dec (C\u2013V 2 %: 0.344)",
+    "value": {
+      "pair (VD 0.05/1 V)": 7.995559565425364,
+      "joint (5 VD, E18)": 7.30314188834708,
+      "joint + t_ox 14 nm": 0.5366360450585826,
+      "joint + t_IWO 7 nm": 0.5548911256606155,
+      "joint + C\u2013V (0.5 %)": 0.3151672532850501,
+      "joint + C\u2013V (2 %)": 0.7169105706697454,
+      "joint + all three": 0.17630823016671973,
+      "joint + all three (C\u2013V 2 %)": 0.34380269660852114,
+      "joint + all three, Qf free": 0.17637112243003136
+    },
+    "source": "results/e20/summary.json (measured)",
+    "note": "local values; strongly point dependent"
+  }
+]
