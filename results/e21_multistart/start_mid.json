@@ -1,0 +1,14 @@
+{
+ "note": "midpoints of the fit bounds (generic start without prior knowledge); qf stays at the Step-5 value",
+ "theta_hat": {
+  "wf_sd": 4.35,
+  "wf_gate": 4.25,
+  "log10_nd_eff": 17.25,
+  "log10_mu0": 1.0,
+  "log10_n_gd": 19.0,
+  "e_gd": 0.25,
+  "s_gd": 0.16,
+  "log10_n_ta": 19.5,
+  "w_ta": 0.165
+ }
+}

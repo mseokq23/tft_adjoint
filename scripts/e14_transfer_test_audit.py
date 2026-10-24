@@ -326,13 +326,15 @@ def robustness(mea):
 
     for f in sorted(glob.glob("results/e15_wta/*/summary.json")):
         row("tail width at the paper's 4%-W value (2%-W data)", f)
-    nc = sorted(glob.glob("results/e16_nc2e18/*/summary.json"))
-    if nc:
-        ss = [json.load(open(f)) for f in nc]
-        ref = min(s["chi2"] for s in ss)
-        sc = (min(ss, key=lambda s: s["chi2"])["sigma_eff"] / ss[0]["sigma_dec"]) ** 2
-        for f in nc:
-            row("Nc = 2e18 cm⁻³ instead of 5e18 (vs the better of the two ends)", f, ref, sc)
+    for pattern, label in (("results/e16_nc2e18/*/summary.json", "Nc = 2e18 cm⁻³ instead of 5e18 (vs the better of the two ends)"),
+                           ("results/e21_eps15/*/summary.json", "ε_ch = 15 instead of 10 (vs the better of the two ends)")):
+        mat_runs = sorted(glob.glob(pattern))
+        if mat_runs:
+            ss = [json.load(open(f)) for f in mat_runs]
+            ref = min(s["chi2"] for s in ss)
+            sc = (min(ss, key=lambda s: s["chi2"])["sigma_eff"] / ss[0]["sigma_dec"]) ** 2
+            for f in mat_runs:
+                row(label, f, ref, sc)
     for f, name in (("results/e17_cross/dos_w4/summary.json", "paper's 4%-W DOS and ND,eff, only WF_sd/WF_gate/µ0 fitted"),
                     ("results/e17_cross/dos_step5/summary.json", "paper's 2%-W (Step 5) DOS and ND,eff, only WF_sd/WF_gate/µ0 fitted")):
         if os.path.exists(f):

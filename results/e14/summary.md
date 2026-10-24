@@ -75,5 +75,7 @@ Reference χ²_min = 1589.4 (lowest default-material fit), σ_eff = 0.1189 dec. 
 | tail width at the paper's 4%-W value (2%-W data) | w_ta = 0.238 | wf_sd, wf_gate, log10_nd_eff, log10_mu0, log10_n_gd, e_gd, s_gd, log10_n_ta | 1621.9 | 0.92 | yes |
 | Nc = 2e18 cm⁻³ instead of 5e18 (vs the better of the two ends) | log10_nd_eff = 16.85 | wf_sd, wf_gate, log10_mu0, log10_n_gd, e_gd, s_gd, log10_n_ta, w_ta | 1665.1 | 1.91 | yes |
 | Nc = 2e18 cm⁻³ instead of 5e18 (vs the better of the two ends) | log10_nd_eff = 19.05 | wf_sd, wf_gate, log10_mu0, log10_n_gd, e_gd, s_gd, log10_n_ta, w_ta | 1598.6 | 0.00 | yes |
+| ε_ch = 15 instead of 10 (vs the better of the two ends) | log10_nd_eff = 16.85 | wf_sd, wf_gate, log10_mu0, log10_n_gd, e_gd, s_gd, log10_n_ta, w_ta | 1631.4 | 0.66 | yes |
+| ε_ch = 15 instead of 10 (vs the better of the two ends) | log10_nd_eff = 19.05 | wf_sd, wf_gate, log10_mu0, log10_n_gd, e_gd, s_gd, log10_n_ta, w_ta | 1608.4 | 0.00 | yes |
 | paper's 4%-W DOS and ND,eff, only WF_sd/WF_gate/µ0 fitted | log10_nd_eff = 16.8055, log10_n_gd = 19.6435, e_gd = 0.08, s_gd = 0.224, log10_n_ta = 19.8921, w_ta = 0.238 | wf_sd, wf_gate, log10_mu0 | 2660.9 | 30.34 | no |
 | paper's 2%-W (Step 5) DOS and ND,eff, only WF_sd/WF_gate/µ0 fitted | log10_nd_eff = 18.4082, log10_n_gd = 19.3404, e_gd = 0.12, s_gd = 0.08, log10_n_ta = 19.8921, w_ta = 0.133 | wf_sd, wf_gate, log10_mu0 | 2065.6 | 13.48 | no |

@@ -477,6 +477,24 @@
         "status": 0
       },
       {
+        "check": "\u03b5_ch = 15 instead of 10 (vs the better of the two ends)",
+        "file": "results/e21_eps15/log10_nd_eff_16.85/summary.json",
+        "fixed": "log10_nd_eff = 16.85",
+        "free": "wf_sd, wf_gate, log10_mu0, log10_n_gd, e_gd, s_gd, log10_n_ta, w_ta",
+        "chi2": 1631.400342584849,
+        "dchi2_eff": 0.6567922683954627,
+        "status": 0
+      },
+      {
+        "check": "\u03b5_ch = 15 instead of 10 (vs the better of the two ends)",
+        "file": "results/e21_eps15/log10_nd_eff_19.05/summary.json",
+        "fixed": "log10_nd_eff = 19.05",
+        "free": "wf_sd, wf_gate, log10_mu0, log10_n_gd, e_gd, s_gd, log10_n_ta, w_ta",
+        "chi2": 1608.4349589917458,
+        "dchi2_eff": 0.0,
+        "status": 0
+      },
+      {
         "check": "paper's 4%-W DOS and ND,eff, only WF_sd/WF_gate/\u00b50 fitted",
         "file": "results/e17_cross/dos_w4/summary.json",
         "fixed": "log10_nd_eff = 16.8055, log10_n_gd = 19.6435, e_gd = 0.08, s_gd = 0.224, log10_n_ta = 19.8921, w_ta = 0.238",

@@ -1,0 +1,14 @@
+{
+ "note": "the paper's 4%-W descriptor values as a start for the 2%-W data; qf stays at the Step-5 value",
+ "theta_hat": {
+  "wf_sd": 4.16,
+  "wf_gate": 4.45,
+  "log10_nd_eff": 16.805501,
+  "log10_mu0": 1.380211,
+  "log10_n_gd": 19.643453,
+  "e_gd": 0.08,
+  "s_gd": 0.224,
+  "log10_n_ta": 19.892095,
+  "w_ta": 0.238
+ }
+}
