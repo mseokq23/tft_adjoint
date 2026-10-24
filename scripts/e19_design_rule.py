@@ -19,7 +19,9 @@ For each test the report also gives
     points above 10 pA; a test with more current reaches further into subthreshold),
   * whole-curve factors: λ_max = the largest χ² the test curve can add per unit of calibration Δχ²
     (a set on the calibration's Δχ² = c boundary adds at most c·λ_max), and q = the same along the
-    linearised ND,eff profile (other descriptors re-fitted; the two calibration curves sum to 1),
+    linearised ND,eff profile (other descriptors re-fitted to the calibration curves; the two
+    calibration curves sum to 1; if the test is also included in the re-fit, the profile Δχ² grows
+    only by 1/(sd ratio of ND,eff)²),
   * Δlog det F and the 1σ of every descriptor after adding the test, relative to calibration only
     - i.e. WHAT the test identifies.
 
@@ -340,8 +342,9 @@ def report(out):
              "sd ratio = 1σ of a descriptor after adding the test / 1σ from calibration only (1 = the test adds nothing about it). "
              "λ_max = the largest χ² the whole test curve can add per unit of calibration Δχ² (a set on the calibration's "
              "Δχ² = c boundary adds at most c·λ_max; below 1 the test cannot reject any set the calibration accepts). "
-             "q = the same along the linearised ND,eff profile (other descriptors re-fitted); the two calibration curves "
-             "sum to 1.", "",
+             "q = the same along the linearised ND,eff profile (other descriptors re-fitted to the calibration curves); the two "
+             "calibration curves sum to 1. If the test is also included in the re-fit, the profile Δχ² grows only by "
+             "1/(sd ratio of ND,eff)².", "",
              f"\"max in window\" = the largest single-point value at VG ≥ {vg_lo:+.2f} V, where the calibration curves have "
              "points above the 10 pA floor (a test whose current is larger reaches further into subthreshold).", "",
              "| test | group | rows (first VG) | σ_pred/σ RMS | σ_pred/σ max (at VG) | max in window | λ_max | q (ND,eff profile) | "
