@@ -3,8 +3,8 @@
 이 문서는 작업을 새 환경이나 새 세션에서 정보 손실 없이 이어 가기 위한 것입니다. 연구 내용 해설은 [README.md](../README.md), 실험별 수치는 [EXPERIMENT_LOG.md](../EXPERIMENT_LOG.md)에 있습니다.
 
 - 저장소: https://github.com/mseokq23/tft_adjoint (공개, 기본 브랜치 `main`)
-- 기준 시점: 2026-10-23. 초록 마감: 2026-11-07(KCS 2027).
-- 현재 상태: 핵심 가설 검증의 대부분이 끝났습니다(E0–E17). 남은 일은 E18–E21, 가치 판단(C1–C5), 초록 작성, 다른 시뮬레이터 교차 확인입니다(README 6장).
+- 기준 시점: 2026-10-24. 초록 마감: 2026-11-07(KCS 2027).
+- 현재 상태: 핵심 가설 검증과 결합 보정(E18)까지 끝났습니다(E0–E18). 남은 일은 E19–E21, 가치 판단(C1–C5), 초록 작성, 다른 시뮬레이터 교차 확인입니다(README 6장).
 
 ## 1. 먼저 읽을 것 (순서대로)
 
@@ -52,7 +52,7 @@ python scripts/e0_gradient_check.py         # 약 2분. DEVSIM과 민감도 엔�
 ```
 
 - `results/`에 지금까지의 결과가 모두 있습니다. 이어서 작업하려고 시뮬레이션을 다시 돌릴 필요는 없습니다.
-- 시뮬레이션 없이 다시 만들 수 있는 결과 목록은 README 10장에 있습니다. 모두 저장된 파일과 바이트 단위로 같게 재생성됨을 확인했습니다(2026-10-23).
+- 시뮬레이션 없이 다시 만들 수 있는 결과 목록은 README 10장에 있습니다. 모두 저장된 파일과 바이트 단위로 같게 재생성됨을 확인했습니다(2026-10-24).
 - 지금까지의 실행 환경은 2 vCPU였고, 백그라운드 작업 하나가 2시간을 넘지 않게 나눠 돌렸습니다.
   - profile 계산은 점 단위로 이어 달리기(`e5 --init`, e12의 continuation)가 되므로 나눠 실행할 수 있습니다.
   - 동시에 두 프로세스까지 돌렸습니다.
@@ -67,35 +67,34 @@ python scripts/e0_gradient_check.py         # 약 2분. DEVSIM과 민감도 엔�
 | 쌍둥이 전달 시험 | max ΔVth ≤ 0.76 mV(10^19.4 세트도 13.7 mV) | results/e14/summary.md 1절 |
 | 선형 기준 | 전달 시험 σ_pred/σ 0.25–0.43, 추천 시험 32–239 | results/e14/summary.md 3절 |
 | 실측 비식별 범위 | ND,eff 10^16.85–10^19.05, Δχ²_eff 최대 1.26(χ²_min 1589.4, σ_eff 0.1189 dec) | results/e12_nd/summary.md |
-| 실측 전달 시험 퍼짐 | 3.2/4.6/5.5/3.6 mV(VD 0.5 V만 36.8 mV) | results/e14/summary.md 2절 |
+| 실측 전달 시험 퍼짐 | 세트들이 예측한 Vth의 차이 3.6/1.2/1.3/8.2/3.6 mV(VD 0.1/0.2/0.5 V, L 2 µm VD 0.05/1 V; 각 세트의 전체 시뮬레이션 곡선) | results/e14/summary.md 2절, results/e13/summary.md |
 | 실측 판별 예측 | t_ox 14 nm 133 mV, t_IWO 7 nm 376 mV, C–V 8.2 %. ND,eff 양 끝끼리만 47/126 mV | results/e13/summary.md |
 | 보상 메커니즘 | 게이트 WF +170 mV 대 q·ΔN·t/C_ox +176 mV | results/e5_nd/summary.json의 θ로 계산 |
 | DOS 조합 구분(E17) | 4%-W 조합 Δχ²_eff 30, Step-5 조합 13.5 | results/e14/summary.md 4절 |
 | 시뮬레이터 차이 | Step-5 값이 측정보다 Vth +156/+208 mV | results/e10/summary.md |
 | Step-5 두께 변형 Vth | t_IWO 7 nm −0.25 V, t_ox 14 nm −0.17 V(기본 −0.18 V), VD 1 V | results/crosscheck/step5_stack_vth.json |
+| 결합 보정(E18), 쌍둥이 | VD 5개 160점, ND,eff 10^15.9–10^18.9에서 χ² 최대 0.644 | results/e18/summary.md |
+| 결합 보정(E18), 실측 | VD 5개 93점, 10^16.85–10^19.05에서 Δχ²_eff 최대 2.25(χ²_min 1836.8, σ_eff 0.0935 dec). hold-out L 2 µm의 예측 Vth 차이 9.4/2.5 mV(VD 0.05/1 V) | results/e18/summary.md, results/e18_joint_meas/profile/summary.md |
 | VD·L 시험의 해석적 근거 | 1차원 Pao–Sah: I(VG, VD) = qµ(W/L)∫_{VG−VD}^{VG} N_s(u) du, 2D Step-5와 Vth 1.7 mV 이내 | results/aux_paosah_1d/summary.md |
 
-수치를 글에 옮길 때는 반드시 위 파일에서 다시 확인합니다. 133/376 mV는 v2·v3 두 자유 보정 사이의 차이가 포함된 값이라 ND,eff 차이 때문이라고 쓰면 안 됩니다.
+수치를 글에 옮길 때는 반드시 위 파일에서 다시 확인합니다. 133/376 mV는 v2·v3 두 자유 보정 사이의 차이가 포함된 값이라 ND,eff 차이 때문이라고 쓰면 안 됩니다. 측정 대비 전달 시험 ΔVth는 디지타이즈 공백 때문에 근사값입니다(6장 "판독 신뢰도").
 
 ## 5. 다음 작업 구현 메모
 
-### E18 결합 보정 profile
+### E18 결합 보정 profile — 완료(2026-10-24)
 
-- `scripts/e11_calibrate_measured.py`
-  - 보정 VD `(0.05, 1.0)`이 다섯 곳에 직접 적혀 있습니다: 측정 선택 루프(102행), `CurveModel(... vds=...)`(112행), 보정 곡선 비교(140·142·147행).
-  - `--vds`(쉼표 구분, 기본 `0.05,1.0`)를 추가해 이 다섯 곳에 쓰고, hold-out 목록(150행 `(0.1, 0.2, 0.5)`)에서는 보정에 쓴 VD를 뺍니다. 150행의 L = 2 µm 쌍 `(0.05, 1.0)`은 그대로 둡니다.
-  - `summary.json`의 `cal` 키는 보정 VD별로 저장되므로, `e14_transfer_test_audit.py`의 `measured_sets()`(`("0.05", "1.0")`을 가정)도 함께 확인합니다.
-- `scripts/e12_profile_measured.py`: `run_side()`가 e11에 `--max_nfev`만 넘깁니다. `--vds`를 받아 그대로 넘기게 합니다.
-- `scripts/e5_profile_likelihood.py`(쌍둥이): 합성 데이터 생성과 `CurveModel(truth, names, vds=(0.05, 1.0), ...)`(약 86행)에 `--vds`를 반영합니다. `HOLDOUT`(37행)에서 보정에 쓴 VD를 뺍니다.
-- **출력 폴더를 반드시 분리합니다**(`results/e18_joint_meas/`, `results/e18_joint_twin/`). 이유는 두 가지입니다.
-  - `e14`의 `measured_sets()`는 `results/e12_nd/log10_nd_eff_*`를 모두 읽습니다.
-  - `robustness()`는 `results/e15_wta/*`, `results/e17_cross/*`를 읽어 χ²_min을 정합니다.
-  - 잔차 수가 다른(5 VD) 결합 보정의 χ²가 2곡선 분석의 χ²_min에 섞이면 안 됩니다.
-- 순서:
-  1. 결합 자유 보정(시작점: `results/e11_2W_v3/summary.json`, `--max_nfev 40`)
-  2. 그 결과를 `--best`로 ND,eff profile(예: 18.35, 17.85, 16.85 / 19.05)
-  3. 쌍둥이 2점
-- 판정: 10배 이상 범위에서 Δχ²_eff < 3.84인지(σ_eff는 결합 보정의 값). VD 0.1/0.2/0.5 V 아문턱은 판독 점이 적다는 점을 함께 적습니다.
+- 구현:
+  - `e11_calibrate_measured.py`: `--vds`(보정 VD), `--max_gap`(측정 VG의 격자점만 사용). L1 hold-out에서는 보정에 쓴 VD를 뺍니다. J는 논문 정의대로 VD 0.05/1 V로만 계산합니다.
+  - `e12_profile_measured.py`: `--vds`·`--max_gap`을 e11에 넘기고, 보고서 제목에 결합 VD를 적습니다.
+  - `e5_profile_likelihood.py`: `--vds`(합성 데이터와 hold-out 목록에 반영). `e5b_merge_profiles.py`는 `vds`·`n_res`를 이어 받습니다.
+  - `e18_report.py`: 판정표와 그림. L = 2 µm 예측 Vth의 세트 간 차이는 전체 시뮬레이션 곡선에서 계산합니다.
+  - 저장된 결과로 보고서만 다시 만들면(README 10장) 기본값(VD 0.05/1 V) 결과가 바이트 단위로 같게 나옵니다. e11·e5를 새로 돌리면 summary.json에 `vds`(e11은 `max_gap`·`n_res_vd`도) 키가 추가되므로, 파일이 기존 것과 바이트 단위로 같지는 않습니다.
+- 실행: profile 점마다 같은 ND,eff의 2곡선 결과에서 출발하는 독립 실행(README 10장 명령). 결과는 `results/e18_*`에만 둡니다. e14가 `results/e12_nd`·`e15_wta`·`e17_cross`를 읽어 χ²_min을 정하므로 섞이면 안 됩니다.
+- 범위: 보정에 더한 것은 L = 1 µm의 VD 0.1/0.2/0.5 V 곡선뿐입니다. L = 2 µm 두 곡선은 hold-out으로 남겼습니다.
+- 남은 보완(선택):
+  - 실측 profile 점을 평가 40회로 다시 돌려 Δχ²_eff가 더 내려가는지 확인합니다(현재 기준점 대비 상한).
+  - `fig_core_claim.py` (b)에 결합 보정 profile을 겹치는 개정은 E19와 함께 합니다.
+  - L = 2 µm까지 넣은 7곡선 결합 보정: `CurveModel`은 기하 하나만 다루므로, L = 1·2 µm 두 모델의 잔차를 하나로 묶는 확장이 필요합니다. 실측 L = 2 µm 곡선도 공백이 있으므로 `--max_gap`을 함께 씁니다.
 
 ### E19 일반 규칙 (선형)
 
@@ -142,12 +141,17 @@ python scripts/e0_gradient_check.py         # 약 2분. DEVSIM과 민감도 엔�
 - **수렴 기준:** `absolute_error = 1e30`(상대오차만 사용), 아문턱 최대 반복 100회입니다. 민감도 선형계는 `ScaledLU`(equilibration + 반복 보정)를 씁니다. 일반 LU로 바꾸면 정확도가 5–6자리 떨어집니다.
 - **E5 재실행:** README 10장의 네 명령을 그대로 쓰면 같은 결과가 나옵니다. 한 번에 기본값(평가 20회)으로 돌리면 구분 불가 영역은 마지막 자릿수, 10^19.15·10^19.4는 그보다 크게 달라질 수 있습니다.
 - **논문 값 표기:** 2%-W Gaussian 중심은 Sec. III-A에서 Ec − 0.12 eV, Sec. IV에서 Ec − 0.122 eV입니다. 0.12 eV를 썼습니다.
-- **판독 신뢰도:** VD 0.1/0.2/0.5 V 아문턱과 4%-W VD 0.05 V는 판독 점이 적습니다. 실측 VD 0.5 V의 세트 간 퍼짐(36.8 mV)이 큰 것도 이 때문일 수 있습니다.
+- **판독 신뢰도:** VD 0.1/0.2/0.5 V 아문턱과 4%-W VD 0.05 V는 판독 점이 적습니다.
+  - 디지타이즈한 전달 시험 곡선 다섯 개는 모두 100 nA 부근이 비어 있습니다. VD 0.1 V: −0.65 V 다음이 −0.1 V, VD 0.2 V: −0.65 V 다음이 0.45 V, VD 0.5 V: −0.85 V 다음이 0.35 V, L = 2 µm(VD 0.05·1 V): −0.55 V 다음이 −0.15 V. 이 곡선들의 "측정 Vth"는 보간값이고, VD 0.1/0.2/0.5 V는 사실상 정해지지 않습니다.
+  - `holdout[k]["dVth_mV"]`(e11)는 모델을 측정 VG에서만 표본화해 같은 공백에 걸쳐 보간한 값입니다. 그래서 세트 간 비교에 쓰면 공백 때문에 값이 달라집니다(예: VD 0.5 V 36.8 mV 대 전체 곡선 1.3 mV). 세트 간 비교는 `holdout[k]["curve"]`와 `vg`로 전체 곡선의 Vth를 계산해서 합니다(e13 `full_curve_metrics`, e14 `vth_full_mV`, e18_report `full_vth`, `fig_core_claim.py` (c), `fig_measured.py` (d)).
+  - L = 2 µm의 측정 대비 ΔVth는 표본화만으로 15–24 mV 달라집니다. 절대값을 쓸 때는 이 불확실성을 함께 적습니다.
+  - 기본 E11 규칙은 측정 곡선을 격자에 선형 보간하므로, 이 곡선들을 보정에 넣으려면 `--max_gap 0.05`가 필요합니다(빈 구간 보간 금지).
+- **E18 χ² 비교:** `--max_gap`을 쓰면 VD 0.05 V 잔차도 두 점(0.1, 0.2 V) 줄어듭니다. E18의 χ²·σ_eff(0.0935 dec)는 E11·E12(σ_eff 0.119 dec)와 직접 비교하지 않습니다.
 
 ## 7. 교차 확인 상태
 
 - `results/crosscheck/`는 다른 시뮬레이터(예: 논문의 Sentaurus deck)에서 대안 세트를 돌려 보기 위한 묶음입니다.
   - `alternative_parameter_sets.csv`는 `scripts/make_crosscheck_package.py`로 다시 만듭니다.
   - `README.txt`에 정의, 두께·C–V 개념, 점검 절차가 있습니다.
-- 확인 결과는 아직 없습니다(2026-10-23 기준).
+- 확인 결과는 아직 없습니다(2026-10-24 기준).
 - 결과가 오면 README 6.5의 판정 기준으로 반영합니다. 진행 경위 등 비공개 내용은 저장소 밖 노트에 있습니다.

@@ -266,7 +266,8 @@
     "L1_VD0.1": {
       "paper_split": true,
       "synthetic_mV": 0.1387317032867652,
-      "measured_mV": 3.2117448513118703,
+      "measured_mV": 3.561806232779361,
+      "measured_vs_points_mV": 3.2117448513118703,
       "measured_elog_range": [
         0.03754525422767931,
         0.0388975938720051
@@ -275,7 +276,8 @@
     "L1_VD0.2": {
       "paper_split": true,
       "synthetic_mV": 0.2670585766386402,
-      "measured_mV": 4.6045042146517545,
+      "measured_mV": 1.2399906399484735,
+      "measured_vs_points_mV": 4.6045042146517545,
       "measured_elog_range": [
         0.021399951919038932,
         0.023078030056117256
@@ -284,7 +286,8 @@
     "L1_VD0.5": {
       "paper_split": true,
       "synthetic_mV": 0.19785921517925797,
-      "measured_mV": 36.76000602108243,
+      "measured_mV": 1.3113483851491878,
+      "measured_vs_points_mV": 36.76000602108243,
       "measured_elog_range": [
         0.017326074544453018,
         0.02019343310810294
@@ -293,7 +296,8 @@
     "L2_VD0.05": {
       "paper_split": true,
       "synthetic_mV": 0.8251313672011928,
-      "measured_mV": 5.540110878318238,
+      "measured_mV": 8.196944867159829,
+      "measured_vs_points_mV": 5.540110878318238,
       "measured_elog_range": [
         0.11232443796116653,
         0.11800604401554035
@@ -302,7 +306,8 @@
     "L2_VD1": {
       "paper_split": true,
       "synthetic_mV": 0.32140143930040055,
-      "measured_mV": 3.616214007579387,
+      "measured_mV": 3.6058757904881418,
+      "measured_vs_points_mV": 3.616214007579387,
       "measured_elog_range": [
         0.15733714540570415,
         0.16105648850290102
@@ -311,13 +316,15 @@
     "cal_0.05": {
       "paper_split": true,
       "synthetic_mV": 0.2398651211944769,
-      "measured_mV": 8.197933070894559,
+      "measured_mV": 8.197933070894578,
+      "measured_vs_points_mV": 8.197933070894559,
       "measured_elog_range": null
     },
     "cal_1": {
       "paper_split": true,
       "synthetic_mV": 0.13508343980622728,
-      "measured_mV": 1.3340641865047829,
+      "measured_mV": 1.3340641865047473,
+      "measured_vs_points_mV": 1.3340641865047829,
       "measured_elog_range": null
     },
     "t_IWO 7 nm": {
@@ -407,7 +414,7 @@
     "17.90": 0.0005958140657478045,
     "18.90": 0.005436762081131036
   },
-  "measured_aggregate_spread": {
+  "measured_aggregate_spread_vs_points": {
     "drain_vth_avg": 10.50015739019171,
     "drain_vth_max": 36.76000602108243,
     "drain_ion_avg": 0.0009990778868648863,
@@ -417,6 +424,23 @@
     "length_ion_avg": 0.008126750190849963,
     "length_ion_max": 0.00891065671949498
   },
+  "measured_aggregate_spread_ion": {
+    "drain_ion_avg": 0.0009990778868648863,
+    "drain_ion_max": 0.003743187023982575,
+    "length_ion_avg": 0.008126750190849963,
+    "length_ion_max": 0.00891065671949498
+  },
+  "measured_gap_V": {
+    "L1_VD0.1": 0.55,
+    "L1_VD0.2": 1.1,
+    "L1_VD0.5": 1.2,
+    "L2_VD0.05": 0.4,
+    "L2_VD1": 0.4
+  },
+  "l2_sampling_shift_mV": [
+    16.42178232803218,
+    23.77803211520586
+  ],
   "measured_J_range": [
     0.3484898014919433,
     0.4121219719532224

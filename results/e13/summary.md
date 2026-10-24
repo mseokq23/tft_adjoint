@@ -18,10 +18,10 @@ Sets: measured 2 %-W profile of ND,eff (E12) and the free best fit; reference = 
 
 | test | in the paper's split? | Vth spread (mV) | Ion spread (dec) | largest RMS deviation between sets (dec) |
 |---|---|---|---|---|
-| L1 VD0.1 | yes (transfer test) | 3.2 | 0.005 | – |
-| L1 VD0.2 | yes (transfer test) | 4.6 | 0.004 | – |
-| L1 VD0.5 | yes (transfer test) | 36.8 | 0.004 | – |
-| L2 VD0.05 | yes (transfer test) | 5.5 | 0.009 | – |
+| L1 VD0.1 | yes (transfer test) | 3.6 | 0.005 | – |
+| L1 VD0.2 | yes (transfer test) | 1.2 | 0.004 | – |
+| L1 VD0.5 | yes (transfer test) | 1.3 | 0.004 | – |
+| L2 VD0.05 | yes (transfer test) | 8.2 | 0.009 | – |
 | L2 VD1 | yes (transfer test) | 3.6 | 0.007 | – |
 | t_IWO 7 nm VD=0.05 | no | 416.3 | 0.035 | 0.714 |
 | t_IWO 7 nm VD=1 | no | 376.5 | 0.039 | 0.815 |
@@ -29,4 +29,4 @@ Sets: measured 2 %-W profile of ND,eff (E12) and the free best fit; reference = 
 | t_ox 14 nm VD=1 | no | 133.2 | 0.033 | 0.358 |
 | quasi-static C–V | no | – | – | max ΔC 8.19 % of C_ox·A |
 
-Transfer-test spreads are differences between the sets' errors against the MEASURED hold-out curves (E12); new-test spreads are differences between the sets' predictions (no data exist).
+All spreads are between the sets' predictions on their full simulated curves. The measured transfer curves (L = 1 µm at VD 0.1/0.2/0.5 V, L = 2 µm at VD 0.05/1 V) have digitisation gaps around 100 nA, so the sets' errors against them are interpolated across the gap; their spread is kept in summary.json (vth_spread_vs_measured_points_mV).

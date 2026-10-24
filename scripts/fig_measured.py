@@ -4,7 +4,9 @@
     parameters in DEVSIM, to show that descriptor values do not transfer between simulators)
 (b) hold-out conditions predicted by the calibrated model vs measured
 (c) measured-data profile of ND,eff: Δχ² (σ_eff) of every row of results/e12_nd
-(d) hold-out ΔVth (against the measured hold-out curves) of every row of the profile
+(d) hold-out Vth predicted by every row of the profile (full simulated curves), relative to the median
+    over the rows; the digitised hold-out curves have gaps around 100 nA, so a ΔVth against them
+    would be an interpolation across the gap
 
 Reads results/e10, results/e11_2W_v2 and results/e12_nd.
 Usage:  python scripts/fig_measured.py [--out results/fig_measured.png]
@@ -23,6 +25,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+from _common import ROOT  # noqa: F401  (puts the repository root on sys.path)
+from tftsim.metrics import extract
 
 BLUE, ORANGE, AQUA = "#2a78d6", "#eb6834", "#1baf7a"
 INK, INK2, GRID = "#0b0b0b", "#52514e", "#d9d8d4"
@@ -81,7 +85,7 @@ def main():
             continue
         m = meas[key]
         b.semilogy(m[:, 0], m[:, 1], "o", mfc="none", color=cols.get(k, INK2), ms=3)
-        b.semilogy(vg, h["curve"], "-", color=cols.get(k, INK2), lw=1.4, label=f"{k.replace('_', ' ')}: ΔVth {h['dVth_mV']:+.0f} mV")
+        b.semilogy(vg, h["curve"], "-", color=cols.get(k, INK2), lw=1.4, label=k.replace("_", " "))
     b.set_ylim(1e-12, 2e-3)
     b.set_xlabel("VG (V)")
     b.set_title("(b) hold-out conditions: prediction vs measured", loc="left")
@@ -106,13 +110,18 @@ def main():
         c.legend(loc="upper left", fontsize=6.5)
         style(c)
         keys = ["L1_VD0.1", "L1_VD0.2", "L1_VD0.5", "L2_VD0.05", "L2_VD1"]
+        sets = [json.load(open(pr["best"]))] + [json.load(open(f)) for f in sorted(
+            glob.glob(os.path.join(os.path.dirname(args.profile), "log10_nd_eff_*", "summary.json")))]
+        sets.sort(key=lambda s_: s_["theta_hat"]["log10_nd_eff"])
+        xs = [s_["theta_hat"]["log10_nd_eff"] for s_ in sets]
         for k in keys:
-            ys = [r["holdout"].get(k, {}).get("dVth_mV", np.nan) for r in rows]
-            d.plot(x, ys, "o-", color=cols.get(k, INK2), lw=1.4, ms=4, label=k.replace("_", " "))
+            v = np.array([1e3 * extract(np.array(s_["vg"]), np.array(s_["holdout"][k]["curve"]))["vth"] for s_ in sets])
+            d.plot(xs, v - np.median(v), "o-", color=cols.get(k, INK2), lw=1.4, ms=4, label=k.replace("_", " "))
         d.axhspan(-46.2, 46.2, color=GRID, alpha=0.5, lw=0)
-        d.text(x[0], 41, "paper's own hold-out max |ΔVth| 46.2 mV", fontsize=6.5, color=INK2, va="top")
+        d.text(xs[0], 41, "for scale: paper's own hold-out max |ΔVth| 46.2 mV", fontsize=6.5, color=INK2, va="top")
+        d.set_ylim(-52, 52)
         d.set_xlabel("log10 ND,eff (cm⁻³) of the re-fitted set")
-        d.set_ylabel("hold-out ΔVth vs measured (mV)")
+        d.set_ylabel("predicted hold-out Vth − median (mV)")
         d.set_title("(d) hold-out tests cannot tell the sets apart", loc="left")
         d.legend(loc="center", bbox_to_anchor=(0.5, 0.74), fontsize=6, ncol=3)
         style(d)

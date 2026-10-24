@@ -24,7 +24,9 @@ Drain-bias split: L = 1 µm, VD = 0.05/0.1/0.2/0.5/1.0 V. Length split: L = 2 µ
 
 Twin: noise level at which the calibration curves alone would reject each set (χ² = 3.84, perfect model): 10^15.90: 5.8e-04 dec, 10^16.90: 5.7e-04 dec, 10^17.40: 6.1e-04 dec, 10^17.90: 6.0e-04 dec, 10^18.90: 5.4e-03 dec.
 
-Measured sets: spread of the aggregates across ND,eff = 10^16.85–10^19.05: drain_vth_avg 11, drain_vth_max 37, drain_ion_avg 0.001, drain_ion_max 0.0037, length_vth_avg 4.6, length_vth_max 3.6, length_ion_avg 0.0081, length_ion_max 0.0089 (mV or dec).
+Measured sets: spread of the Ion aggregates across ND,eff = 10^16.85–10^19.05: drain_ion_avg 0.001, drain_ion_max 0.0037, length_ion_avg 0.0081, length_ion_max 0.0089 (dec). For Vth, the sets are compared on their full simulated curves (section 2); the Vth aggregates above depend on the digitisation gaps (their spread is kept in summary.json as measured_aggregate_spread_vs_points).
+
+Caution: all five digitised transfer curves have no points around 100 nA (VG gaps: L1_VD0.1 0.55 V, L1_VD0.2 1.10 V, L1_VD0.5 1.20 V, L2_VD0.05 0.40 V, L2_VD1 0.40 V), so the errors against the measured curves (model sampled at the measured VG points, Vth interpolated across the gap) are approximate. For L = 1 µm at VD 0.1/0.2/0.5 V the measured Vth is essentially undetermined, so the drain-split Vth columns are not meaningful; for L = 2 µm, sampling alone moves the model Vth by +16 to +24 mV.
 
 The paper's objective J (paper weights, our normalisation a_i) over the same measured sets: 0.348–0.412.
 
@@ -32,12 +34,12 @@ The paper's objective J (paper weights, our normalisation a_i) over the same mea
 
 Digitisation noise expressed in Vth: σ_logI × SS = 0.02 dec × 123/111 mV/dec = 2.5/2.2 mV (VD = 0.05/1 V). The paper's own transfer errors: 25–46 mV. Measured E_log: RMS log10 error against the measured points above 1 nA (range over the sets, and its spread).
 
-| test | in the paper's split | twin: ΔVth spread over ND,eff 10^15.9–10^18.9 (mV) | measured: ΔVth spread over ND,eff 10^16.85–10^19.05 (mV) | measured: E_log above 1 nA (dec) |
+| test | in the paper's split | twin: ΔVth spread over ND,eff 10^15.9–10^18.9 (mV) | measured-fit sets: spread of the predicted Vth over ND,eff 10^16.85–10^19.05 (mV) | measured: E_log above 1 nA (dec) |
 |---|---|---|---|---|
-| L1 VD0.1 | yes | 0.14 | 3.2 | 0.038–0.039 (spread 0.001) |
-| L1 VD0.2 | yes | 0.27 | 4.6 | 0.021–0.023 (spread 0.002) |
-| L1 VD0.5 | yes | 0.20 | 36.8 | 0.017–0.020 (spread 0.003) |
-| L2 VD0.05 | yes | 0.83 | 5.5 | 0.112–0.118 (spread 0.006) |
+| L1 VD0.1 | yes | 0.14 | 3.6 | 0.038–0.039 (spread 0.001) |
+| L1 VD0.2 | yes | 0.27 | 1.2 | 0.021–0.023 (spread 0.002) |
+| L1 VD0.5 | yes | 0.20 | 1.3 | 0.017–0.020 (spread 0.003) |
+| L2 VD0.05 | yes | 0.83 | 8.2 | 0.112–0.118 (spread 0.006) |
 | L2 VD1 | yes | 0.32 | 3.6 | 0.157–0.161 (spread 0.004) |
 | calibration VD 0.05 V | yes | 0.24 | 8.2 | (fitted) |
 | calibration VD 1 V | yes | 0.14 | 1.3 | (fitted) |
@@ -45,7 +47,7 @@ Digitisation noise expressed in Vth: σ_logI × SS = 0.02 dec × 123/111 mV/dec 
 | t_ox 14 nm, VD 1 V | no (recommended) | 129 | 133 | predictions differ by up to 0.36 dec RMS |
 | quasi-static C–V (max ΔC, % of C_ox·A) | no (recommended) | 6.9 % | 8.2 % | – |
 
-Twin: ΔVth of each re-fitted set relative to the truth (truth included as 0). Measured: ΔVth of each set against the measured curve; the spread is what can differ between the sets. For tests outside the paper's split no data exist: the spread is between the sets' predictions (E9 vs the truth, E13 between the measured-fit sets).
+Twin: ΔVth of each re-fitted set relative to the truth (truth included as 0). Measured-fit sets: spread of the Vth that the sets predict on their full simulated curves (the measured transfer curves have digitisation gaps around 100 nA; the spread of the errors against the measured points is kept in summary.json as measured_vs_points_mV). For tests outside the paper's split no data exist: the spread is between the sets' predictions (E9 vs the truth, E13 between the measured-fit sets).
 
 ## 3. Linear check at the Step-5 truth: predictive 1σ of each test given the calibration data
 

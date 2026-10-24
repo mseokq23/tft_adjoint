@@ -9,10 +9,17 @@ After the fit: χ², RMS misfit, the paper's metrics and J, a Gauss-Newton 1σ w
 χ²/dof = 1 (model error included), and - for 2 %-W - predictions at the paper's hold-out conditions
 compared with the measured hold-out curves.
 
+Joint calibration (E18): --vds 0.05,0.1,0.2,0.5,1.0 fits all L = 1 µm drain biases at once; the
+hold-out list then keeps only the drain biases that were not fitted (and L = 2 µm). The digitised
+VD = 0.1/0.2/0.5 V curves have large gaps around threshold, so --max_gap 0.05 restricts the fitted
+grid points to measured VG values (no interpolation across gaps); used for all E18 fits.
+
 Usage:
   python scripts/e11_calibrate_measured.py --set 2W --out results/e11_2W
   python scripts/e11_calibrate_measured.py --set 2W --fix log10_nd_eff=17.4 --start results/e11_2W/summary.json --out ...
   python scripts/e11_calibrate_measured.py --set 4W --vgmin -0.7 --start w4 --out results/e11_4W
+  python scripts/e11_calibrate_measured.py --set 2W --vds 0.05,0.1,0.2,0.5,1.0 --max_gap 0.05 \
+      --start results/e11_2W_v3/summary.json --max_nfev 40 --out results/e18_joint_meas/free
 """
 from __future__ import annotations
 
@@ -68,6 +75,10 @@ def main():
     ap.add_argument("--sigma", type=float, default=0.02)
     ap.add_argument("--floor", type=float, default=1e-10, help="measured points below this are noise-floor dominated and not fitted")
     ap.add_argument("--max_nfev", type=int, default=25)
+    ap.add_argument("--vds", default="0.05,1.0", help="drain biases (V) of the fitted L = 1 µm curves, comma-separated")
+    ap.add_argument("--max_gap", type=float, default=None,
+                    help="fit only grid points at measured VG values or inside gaps of at most this width (V); "
+                         "default: interpolate the measured curve everywhere (as in E11/E12)")
     ap.add_argument("--no_holdout", action="store_true")
     ap.add_argument("--nc", type=float, default=None, help="material: effective conduction-band DOS (cm^-3), default 5e18")
     ap.add_argument("--eps_ch", type=float, default=None, help="material: channel relative permittivity, default 10")
@@ -96,10 +107,11 @@ def main():
             th0[k] = fixed[n]
     base = params_from(base, names, th0)
 
+    fit_vds = tuple(float(v) for v in args.vds.split(","))
     meas_all = load_meas(args.meas, args.set)
     vgs = vg_grid(args.vgmin, 2.0, args.step)
     meas = {}
-    for vd in (0.05, 1.0):
+    for vd in fit_vds:
         m_vg, m_i = meas_all[vd]
         # drop the noise-floor region: everything up to the last point below the floor (isolated
         # floor spikes above 1e-10 A at the start of the sweep are measurement noise, not the device)
@@ -108,8 +120,14 @@ def main():
             keep = m_vg > m_vg[below[-1]] if m_vg[below[-1]] < 0.5 else np.ones_like(m_vg, bool)
             m_vg, m_i = m_vg[keep], m_i[keep]
         meas[vd] = np.interp(vgs, m_vg, m_i, left=np.nan, right=np.nan)          # measured on the fit grid
+        if args.max_gap is not None:                 # no interpolation across digitisation gaps
+            j = np.searchsorted(m_vg, vgs - 1e-6)
+            at_point = (j < m_vg.size) & (np.abs(m_vg[np.minimum(j, m_vg.size - 1)] - vgs) < 1e-6)
+            inside = (j > 0) & (j < m_vg.size) & (m_vg[np.minimum(j, m_vg.size - 1)] - m_vg[np.maximum(j - 1, 0)]
+                                                  <= args.max_gap + 1e-9)
+            meas[vd] = np.where(at_point | inside, meas[vd], np.nan)
         meas[vd] = np.where(np.isfinite(meas[vd]) & (meas[vd] >= args.floor), meas[vd], 1e-30)
-    model = CurveModel(base, names, vds=(0.05, 1.0), vgs=vgs, mat=mat)
+    model = CurveModel(base, names, vds=fit_vds, vgs=vgs, mat=mat)
     fun_all, jac_all, masks = log_residual_problem(model, meas, args.sigma, th0, scale)
     nfix = len(fixed)
     lb = np.array([(BOUNDS[n][0] - th0[k]) / scale[k] for k, n in enumerate(free)])
@@ -117,8 +135,9 @@ def main():
     zf = np.zeros(nfix)
     fun = lambda z: fun_all(np.concatenate([z, zf]))
     jac = lambda z: jac_all(np.concatenate([z, zf]))[:, :len(free)]
+    n_res_vd = {f"{vd:g}": int(masks[vd].sum()) for vd in fit_vds}
     r0 = fun(np.zeros(len(free)))
-    print(f"start χ² = {float(r0 @ r0):.1f} on {r0.size} residuals ({clock():.0f} s)")
+    print(f"start χ² = {float(r0 @ r0):.1f} on {r0.size} residuals {n_res_vd} ({clock():.0f} s)")
     res = least_squares(fun, np.zeros(len(free)), jac=jac, bounds=(lb, ub), method="trf", x_scale=1.0,
                         max_nfev=args.max_nfev, ftol=1e-8, xtol=1e-8, gtol=1e-8)
     th = th0.copy()
@@ -137,17 +156,21 @@ def main():
     # ---- full-resolution evaluation, metrics, J
     del model
     vfull = vg_grid(args.vgmin, 2.0, 0.05)
-    _, cv = sweep_device(pfit, Geometry(), vds=(0.05, 1.0), vgs=vfull, mat=mat)
+    _, cv = sweep_device(pfit, Geometry(), vds=fit_vds, vgs=vfull, mat=mat)
     mc = {}
-    for vd in (0.05, 1.0):
+    for vd in fit_vds:
         m_vg, m_i = meas_all[vd]
         sel = m_vg >= args.vgmin - 1e-9
         mc[vd] = (m_vg[sel], m_i[sel])
-    J = objective_J(cv, mc)
-    cmp_cal = {str(vd): compare(*cv[vd], *mc[vd]) for vd in (0.05, 1.0)}
+    jv = [vd for vd in (0.05, 1.0) if vd in fit_vds]           # the paper's J is defined on its calibration pair
+    J = objective_J({vd: cv[vd] for vd in jv}, {vd: mc[vd] for vd in jv}) if jv else {"J": float("nan"), "terms": []}
+    cmp_cal = {str(vd): compare(*cv[vd], *mc[vd]) for vd in fit_vds}
     ho = {}
     if args.set == "2W" and not args.no_holdout:
-        for geom, vds, tag in ((Geometry(), (0.1, 0.2, 0.5), "L1"), (Geometry(L_um=2.0), (0.05, 1.0), "L2")):
+        l1 = tuple(vd for vd in (0.1, 0.2, 0.5) if vd not in fit_vds)
+        for geom, vds, tag in ((Geometry(), l1, "L1"), (Geometry(L_um=2.0), (0.05, 1.0), "L2")):
+            if not vds:
+                continue
             try:
                 _, hc = sweep_device(pfit, geom, vds=vds, vgs=vfull, mat=mat)
             except ConvergenceError as exc:
@@ -160,18 +183,24 @@ def main():
                     ho[f"{tag}_VD{vd:g}"]["curve"] = hc[vd][1]
     summary = {"set": args.set, "material": {"Nc_cm3": mat.Nc_cm3, "eps_ch": mat.eps_ch},
                "names": names, "free": free, "fixed": fixed, "sigma_dec": args.sigma,
+               "vds": list(fit_vds), "max_gap": args.max_gap, "n_res_vd": n_res_vd,
                "theta_hat": dict(zip(names, th.tolist())), "std_eff": dict(zip(free, std.tolist())), "sigma_eff": float(sig_eff),
                "chi2": chi2, "n_res": int(r.size), "dof": dof, "rms_dec": float(args.sigma * np.sqrt(chi2 / r.size)),
                "J": J["J"], "terms": J["terms"], "cal": cmp_cal, "holdout": ho, "nfev": int(res.nfev), "status": int(res.status),
                "vg": vfull, "curves": {str(vd): v[1] for vd, v in cv.items()}, "wall_s": clock()}
     dump_json(summary, f"{out}/summary.json")
-    lines = [f"# E11 calibration to measured {args.set} curves (L = 1 µm, VD = 0.05/1 V, VG ≥ {args.vgmin} V)", "",
+    vd_txt = "/".join(f"{vd:g}" for vd in fit_vds)
+    lines = [f"# E11 calibration to measured {args.set} curves (L = 1 µm, VD = {vd_txt} V, VG ≥ {args.vgmin} V)", "",
              f"- fixed: {fixed if fixed else 'Qf only (degenerate with WF)'}; start: "
              f"{(os.path.relpath(args.start, ROOT) if args.start and os.path.exists(args.start) else args.start) or 'paper set'}; "
              f"fitted points: ID ≥ {args.floor:g} A, VG step {args.step} V",
              f"- material: Nc = {mat.Nc_cm3:.3g} cm⁻³, ε_ch = {mat.eps_ch:g}" + (" (defaults)" if mat == Material() else " (changed)"),
              f"- χ² = {chi2:.1f} on {r.size} residuals (σ = {args.sigma} dec) → RMS misfit {summary['rms_dec']:.4f} dec; σ_eff = {sig_eff:.4f} dec",
-             f"- J (paper weights, our a_i) = {J['J']:.3f}", "", "| parameter | value | 1σ (σ_eff) |", "|---|---|---|"]
+             f"- J (paper weights, our a_i) = {J['J']:.3f}"]
+    if fit_vds != (0.05, 1.0) or args.max_gap is not None:
+        lines.append(f"- fitted points per VD: {n_res_vd}" + (f" (grid points at measured VG only, gaps ≤ {args.max_gap:g} V)"
+                                                             if args.max_gap is not None else ""))
+    lines += ["", "| parameter | value | 1σ (σ_eff) |", "|---|---|---|"]
     for k, n in enumerate(names):
         lines.append(f"| {n} | {th[k]:.4g} | {std[k]:.3g} |" if n in free else f"| {n} | {th[k]:.4g} (fixed) | – |")
     lines += ["", "| curve | E_log (dec) | ΔVth (mV) | ΔSS (mV/dec) | Δlog Ion (dec) |", "|---|---|---|---|---|"]

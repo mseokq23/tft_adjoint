@@ -4,7 +4,8 @@
     calibration curves and same transfer-test curve (L = 2 µm)
 (b) profile of ND,eff: Δχ² of the calibration fit (measured data, σ_eff; synthetic twin, σ = 0.02 dec)
 (c) the same measured-fit sets: spread of their predicted Vth (each test centred on the median set) for
-    the paper's five transfer tests and for the two recommended tests (thicker channel / gate oxide)
+    the paper's five transfer tests and for the two recommended tests (thicker channel / gate oxide);
+    Vth from the full simulated curves (the digitised transfer curves have gaps around 100 nA)
 (d) linear check at the twin truth: predictive 1σ of each test given the calibration data, in units
     of the test's own noise (< 1: in the linear approximation the calibration-consistent sets agree
     within the test's noise)
@@ -27,6 +28,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+from _common import ROOT  # noqa: F401  (puts the repository root on sys.path)
+from tftsim.metrics import extract
 
 BLUE, ORANGE, AQUA = "#2a78d6", "#eb6834", "#1baf7a"
 INK, INK2, MUTED, GRID = "#0b0b0b", "#52514e", "#8a8984", "#d9d8d4"
@@ -124,9 +127,9 @@ def main():
 
     # (c) spread of the predicted Vth across all measured-fit sets, per test (centred on the median set)
     cats, cols_c, vals_c = [], [], []
-    for k, lab in zip(TRANSFER, ["VD\n0.1 V", "VD\n0.2 V", "VD\n0.5 V*", "L 2 µm\n0.05 V", "L 2 µm\n1 V"]):
+    for k, lab in zip(TRANSFER, ["VD\n0.1 V", "VD\n0.2 V", "VD\n0.5 V", "L 2 µm\n0.05 V", "L 2 µm\n1 V"]):
         cats.append(lab); cols_c.append(INK2)
-        vals_c.append(np.array([s["holdout"][k]["dVth_mV"] for s in sets]))
+        vals_c.append(np.array([1e3 * extract(np.array(s["vg"]), np.array(s["holdout"][k]["curve"]))["vth"] for s in sets]))
     e13p = "results/e13/summary.json"
     if os.path.exists(e13p):
         e13 = json.load(open(e13p))
@@ -153,7 +156,7 @@ def main():
     if os.path.exists(e13p):
         c.text(0.02, 0.03, f"{len(sets)} sets fitting the measured calibration\ncurves (Δχ²_eff ≤ "
                f"{max((s['chi2'] - chi_min) / scale for s in sets):.1f}); new tests at VD = 1 V;\n"
-               f"C–V differs by up to {e13['tests']['C-V']['max_dev_pct']:.1f} % of C$_{{ox}}$; *few measured points",
+               f"C–V differs by up to {e13['tests']['C-V']['max_dev_pct']:.1f} % of C$_{{ox}}$",
                transform=c.transAxes, fontsize=5.8, color=INK2, va="bottom")
     lo_, hi_ = min(np.min(v - np.median(v)) for v in vals_c), max(np.max(v - np.median(v)) for v in vals_c)
     c.set_ylim(lo_ - 30, hi_ + 45)

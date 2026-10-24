@@ -3,13 +3,17 @@
 Runs e11_calibrate_measured.py repeatedly with the parameter fixed, walking outward from the
 best fit (continuation: each fit starts from the previous one). Then compares
   * Δχ² = χ²(value) − χ²(best), scaled with σ_eff of the best fit (model error included),
-  * the fitted sets' errors at the paper's hold-out conditions against the MEASURED hold-out curves.
+  * the fitted sets' errors at the paper's hold-out conditions against the MEASURED hold-out curves
+    (approximate: the digitised hold-out curves have gaps around 100 nA, see the note in the report).
 
 Usage:
   python scripts/e12_profile_measured.py --best results/e11_2W_v2/summary.json --param log10_nd_eff \
       --values 18.35,17.85,17.35,16.85 --out results/e12_nd
   python scripts/e12_profile_measured.py --best results/e11_2W_v3/summary.json --report --out results/e12_nd
 (the stored table uses the longer free fit e11_2W_v3 as the best fit; see README)
+Joint calibration (E18): --vds and --max_gap are passed to e11_calibrate_measured.py, e.g.
+  python scripts/e12_profile_measured.py --best results/e18_joint_meas/free/summary.json \
+      --vds 0.05,0.1,0.2,0.5,1.0 --max_gap 0.05 --values 18.35,17.85 --out results/e18_joint_meas/profile
 """
 from __future__ import annotations
 
@@ -51,7 +55,9 @@ def report(best_path, param, out):
     chi_min = min(s["chi2"] for _, s, _ in rows)                    # the free fit may stop short of the minimum
     best = dict(best, chi2_ref=chi_min)
     keys = [k for k in best.get("holdout", {}) if "error" not in best["holdout"][k]]
-    lines = [f"# E12: profile likelihood of {param} on the measured 2 %-W calibration curves", "",
+    vds = best.get("vds", [0.05, 1.0])
+    joint = "" if list(vds) == [0.05, 1.0] else f" (joint fit of VD = {'/'.join(f'{v:g}' for v in vds)} V, L = 1 µm)"
+    lines = [f"# E12: profile likelihood of {param} on the measured 2 %-W calibration curves{joint}", "",
              f"- best fit: {param} = {best['theta_hat'][param]:.3f}, χ² = {best['chi2']:.1f} on {best['n_res']} residuals "
              f"(σ = {best['sigma_dec']} dec), σ_eff = {best['sigma_eff']:.4f} dec (model error included)",
              f"- Δχ²_eff = (χ² − χ²_min)·σ²/σ_eff² with χ²_min = {chi_min:.1f} (lowest over all fits); 95 % threshold 3.84", "",
@@ -65,6 +71,12 @@ def report(best_path, param, out):
         lines.append(f"| {v:.3f} | {dchi:.2f} | {s['rms_dec']:.4f} | {s['cal']['1.0']['dVth_mV']:+.1f} | " + " | ".join(cells) + " |")
         table.append({"value": v, "dchi2_eff": dchi, "rms_dec": s["rms_dec"], "theta": s["theta_hat"],
                       "holdout": {k: {kk: vv for kk, vv in ho[k].items() if kk != "curve"} for k in keys if k in ho}})
+    l1 = any(k.startswith("L1_") for k in keys)
+    lines += ["", "Hold-out ΔVth: the model is sampled at the measured VG points and compared with the measured curve. The "
+              f"digitised hold-out curves have no points around 100 nA (VG gaps of {'0.4–1.2' if l1 else '0.4'} V), so these "
+              "ΔVth are approximate" + (" (for L = 1 µm at VD 0.1/0.2/0.5 V the measured Vth is essentially undetermined)"
+                                         if l1 else "") +
+              ". Comparisons between the sets use the full simulated curves (e13, e14, e18_report)."]
     with open(os.path.join(out, "summary.md"), "w") as f:
         f.write("\n".join(lines) + "\n")
     dump_json({"param": param, "best": best_path, "rows": table}, os.path.join(out, "summary.json"))
@@ -93,11 +105,16 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--report", action="store_true")
     ap.add_argument("--max_nfev", default="20")
+    ap.add_argument("--vds", default=None, help="passed to e11 (joint calibration over several drain biases)")
+    ap.add_argument("--max_gap", default=None, help="passed to e11")
     args = ap.parse_args()
     out = outdir(args.out)
     if not args.report:
         vals = [float(v) for v in args.values.split(",") if v]
-        run_side(args.best, args.param, vals, out, ["--max_nfev", args.max_nfev])
+        extra = ["--max_nfev", args.max_nfev]
+        extra += ["--vds", args.vds] if args.vds else []
+        extra += ["--max_gap", args.max_gap] if args.max_gap else []
+        run_side(args.best, args.param, vals, out, extra)
     report(args.best, args.param, out)
 
 

@@ -81,6 +81,17 @@ def load_meas_curves(path="data/meas.csv"):
     return {k: np.array(sorted(v)) for k, v in d.items()}
 
 
+def meas_key(k):
+    tag, vd = norm_key(k).split("_VD")
+    return ("2W", 2.0 if tag == "L2" else 1.0, float(vd))
+
+
+def gap_width(m, ith=1e-7):
+    """Width (V) of the digitisation gap that spans ith on a measured curve (0 if a point lies on each side within 0.05 V)."""
+    j = np.where((m[:-1, 1] < ith) & (m[1:, 1] >= ith))[0]
+    return float(m[j[0] + 1, 0] - m[j[0], 0]) if j.size else float("nan")
+
+
 def elog_above(s, meas, floor=1e-9):
     """RMS log10 error of each hold-out prediction against the measured points above `floor`
     (the digitised curves reach the instrument floor around 1e-10 A; isolated floor points dominate an RMS)."""
@@ -109,8 +120,20 @@ def measured_sets(profile="results/e12_nd", best="results/e11_2W_v3/summary.json
         err = {norm_key(k): (h["dVth_mV"], h["dlogIon_dec"]) for k, h in s["holdout"].items() if "error" not in h}
         for vd, tag in (("0.05", "cal_0.05"), ("1.0", "cal_1")):
             err[tag] = (s["cal"][vd]["dVth_mV"], s["cal"][vd]["dlogIon_dec"])
+        vg = np.array(s["vg"])
+        vth_full, shift = {}, {}
+        for k, h in s["holdout"].items():
+            if "error" in h or "curve" not in h:
+                continue
+            cur, m = np.array(h["curve"]), meas[meas_key(k)]
+            vth_full[norm_key(k)] = 1e3 * extract(vg, cur)["vth"]
+            # what sampling the model only at the measured VG points does to its Vth (the gap effect)
+            shift[norm_key(k)] = 1e3 * extract(m[:, 0], np.interp(m[:, 0], vg, cur))["vth"] - vth_full[norm_key(k)]
+        for vd, tag in (("0.05", "cal_0.05"), ("1.0", "cal_1")):
+            vth_full[tag] = 1e3 * extract(vg, np.array(s["curves"][vd]))["vth"]
         sets[s["theta_hat"]["log10_nd_eff"]] = {"chi2": s["chi2"], "dchi2_eff": (s["chi2"] - chi_min) / scale,
                                                 "rms_dec": s["rms_dec"], "J": s.get("J"), "err": err,
+                                                "vth_full_mV": vth_full, "sampling_shift_mV": shift,
                                                 "elog_1nA": elog_above(s, meas)}
     return sets
 
@@ -199,9 +222,22 @@ def main():
               + ", ".join(f"10^{v:.2f}: {c_:.1e} dec" for v, c_ in sorted(crit.items())) + "."]
     agg_m = [aggregate(s["err"]) for s in mea.values()]
     rng = {f"{sp}_{m}": spread([a[sp][m] for a in agg_m]) for sp in ("drain", "length") for m in ("vth_avg", "vth_max", "ion_avg", "ion_max")}
-    res["measured_aggregate_spread"] = rng
-    lines += ["", f"Measured sets: spread of the aggregates across ND,eff = 10^{min(mea):.2f}–10^{max(mea):.2f}: "
-              + ", ".join(f"{k} {v:.2g}" for k, v in rng.items()) + " (mV or dec).", ""]
+    res["measured_aggregate_spread_vs_points"] = rng            # Vth entries depend on the digitisation gaps
+    res["measured_aggregate_spread_ion"] = {k: v for k, v in rng.items() if "_ion_" in k}
+    meas_c = load_meas_curves()
+    gaps = {k: gap_width(meas_c[meas_key(k)]) for k in HOLD}
+    shifts = [v for s in mea.values() for k, v in s["sampling_shift_mV"].items() if k.startswith("L2_")]
+    res["measured_gap_V"] = gaps
+    res["l2_sampling_shift_mV"] = [min(shifts), max(shifts)]
+    lines += ["", f"Measured sets: spread of the Ion aggregates across ND,eff = 10^{min(mea):.2f}–10^{max(mea):.2f}: "
+              + ", ".join(f"{k} {v:.2g}" for k, v in res["measured_aggregate_spread_ion"].items()) + " (dec). For Vth, the sets "
+              "are compared on their full simulated curves (section 2); the Vth aggregates above depend on the digitisation gaps "
+              "(their spread is kept in summary.json as measured_aggregate_spread_vs_points).",
+              "", "Caution: all five digitised transfer curves have no points around 100 nA (VG gaps: "
+              + ", ".join(f"{k} {g:.2f} V" for k, g in gaps.items()) + "), so the errors against the measured curves (model "
+              "sampled at the measured VG points, Vth interpolated across the gap) are approximate. For L = 1 µm at VD "
+              "0.1/0.2/0.5 V the measured Vth is essentially undetermined, so the drain-split Vth columns are not meaningful; "
+              f"for L = 2 µm, sampling alone moves the model Vth by {min(shifts):+.0f} to {max(shifts):+.0f} mV.", ""]
 
     # 2. spread across the equivalent sets, per test
     js = [s["J"] for s in mea.values() if s.get("J") is not None]
@@ -211,14 +247,15 @@ def main():
               f"Digitisation noise expressed in Vth: σ_logI × SS = 0.02 dec × {ss[0.05]:.0f}/{ss[1.0]:.0f} mV/dec = "
               f"{sig_vth[0.05]:.1f}/{sig_vth[1.0]:.1f} mV (VD = 0.05/1 V). The paper's own transfer errors: 25–46 mV. "
               "Measured E_log: RMS log10 error against the measured points above 1 nA (range over the sets, and its spread).", "",
-              "| test | in the paper's split | twin: ΔVth spread over ND,eff 10^15.9–10^18.9 (mV) | measured: ΔVth spread over ND,eff "
-              f"10^{min(mea):.2f}–10^{max(mea):.2f} (mV) | measured: E_log above 1 nA (dec) |",
+              "| test | in the paper's split | twin: ΔVth spread over ND,eff 10^15.9–10^18.9 (mV) | measured-fit sets: spread of the "
+              f"predicted Vth over ND,eff 10^{min(mea):.2f}–10^{max(mea):.2f} (mV) | measured: E_log above 1 nA (dec) |",
               "|---|---|---|---|---|"]
     for k in HOLD + ["cal_0.05", "cal_1"]:
         a = spread([s["err"][k][0] for s in syn_eq.values() if k in s["err"]] + [0.0])
-        b = spread([s["err"][k][0] for s in mea.values() if k in s["err"]])
+        b = spread([s["vth_full_mV"][k] for s in mea.values() if k in s["vth_full_mV"]])
+        b_pts = spread([s["err"][k][0] for s in mea.values() if k in s["err"]])
         el = [s["elog_1nA"][k] for s in mea.values() if k in s["elog_1nA"]]
-        res["spread"][k] = {"paper_split": True, "synthetic_mV": a, "measured_mV": b,
+        res["spread"][k] = {"paper_split": True, "synthetic_mV": a, "measured_mV": b, "measured_vs_points_mV": b_pts,
                             "measured_elog_range": [min(el), max(el)] if el else None}
         name = {"cal_0.05": "calibration VD 0.05 V", "cal_1": "calibration VD 1 V"}.get(k, k.replace("_", " "))
         elt = f"{min(el):.3f}–{max(el):.3f} (spread {max(el) - min(el):.3f})" if el else "(fitted)"
@@ -239,9 +276,11 @@ def main():
     b = e13["tests"]["C-V"]["max_dev_pct"] if e13 else float("nan")
     res["spread"]["C-V"] = {"paper_split": False, "synthetic_max_dev_pct": a, "measured_max_dev_pct": b}
     lines.append(f"| quasi-static C–V (max ΔC, % of C_ox·A) | no (recommended) | {a:.1f} % | " + (f"{b:.1f} % | – |" if np.isfinite(b) else "(E13 pending) | – |"))
-    lines += ["", "Twin: ΔVth of each re-fitted set relative to the truth (truth included as 0). Measured: ΔVth of each set against the "
-              "measured curve; the spread is what can differ between the sets. For tests outside the paper's split no data exist: the "
-              "spread is between the sets' predictions (E9 vs the truth, E13 between the measured-fit sets).", ""]
+    lines += ["", "Twin: ΔVth of each re-fitted set relative to the truth (truth included as 0). Measured-fit sets: spread of the Vth "
+              "that the sets predict on their full simulated curves (the measured transfer curves have digitisation gaps around "
+              "100 nA; the spread of the errors against the measured points is kept in summary.json as measured_vs_points_mV). "
+              "For tests outside the paper's split no data exist: the spread is between the sets' predictions (E9 vs the truth, "
+              "E13 between the measured-fit sets).", ""]
 
     # 3. linear predictive spread
     lin = linear_predictive()

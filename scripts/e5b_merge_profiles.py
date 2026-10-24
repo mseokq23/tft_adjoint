@@ -32,7 +32,9 @@ def main():
     ok = [recs[k] for k in sorted(recs)]
     free = [n for n in names if n != prof]
     v_true = next(r["value"] for r in ok if r["chi2"] == 0.0)
-    lines = [f"# E5 profile likelihood of {prof} (merged; Step 5 twin, L = 1 µm, VD = 0.05/1.0 V, σ = {sigma} dec)", "",
+    vds = parts[0].get("vds")                 # present for runs with --vds (E18); older runs used VD = 0.05/1.0 V
+    vd_txt = "0.05/1.0" if vds in (None, [0.05, 1.0]) else "/".join(f"{v:g}" for v in vds)
+    lines = [f"# E5 profile likelihood of {prof} (merged; Step 5 twin, L = 1 µm, VD = {vd_txt} V, σ = {sigma} dec)", "",
              f"{parts[0]['n_res']} residuals. χ² < 3.84 → indistinguishable from the truth at 95 % (1 dof).", "",
              f"| {prof} | χ² | RMS misfit (dec) | max misfit (dec) | " + " | ".join(free) + " |",
              "|---|---|---|---|" + "---|" * len(free)]
@@ -52,8 +54,12 @@ def main():
         lines += ["", "Failed fits: " + ", ".join(f"{f['value']}: {f['error'][:80]}" for f in failed)]
     with open(f"{out}/summary.md", "w") as f:
         f.write("\n".join(lines) + "\n")
-    dump_json({"param": prof, "names": names, "sigma_dec": sigma, "vg": vg, "records": ok, "failed": failed,
-               "curves": curves, "v_true": v_true}, f"{out}/summary.json")
+    merged = {"param": prof, "names": names, "sigma_dec": sigma, "vg": vg, "records": ok, "failed": failed,
+              "curves": curves, "v_true": v_true}
+    if vds is not None:
+        assert all(p.get("vds") == vds for p in parts), "parts were fitted to different drain biases"
+        merged.update({"vds": vds, "n_res": parts[0]["n_res"]})
+    dump_json(merged, f"{out}/summary.json")
     print("\n".join(lines))
     if HAVE_MPL:
         import matplotlib.pyplot as plt

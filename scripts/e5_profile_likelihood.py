@@ -18,6 +18,8 @@ continuation outward from the truth on each side.
 
 Usage:  python scripts/e5_profile_likelihood.py [--param log10_nd_eff]
             [--values 16.5,17,17.5,18,18.8,19.2] [--step 0.1] [--max_nfev 20]
+Joint calibration (E18): --vds 0.05,0.1,0.2,0.5,1.0 uses all five L = 1 µm drain biases as the
+calibration data; the hold-out predictions then cover only the remaining conditions (L = 2 µm).
 """
 from __future__ import annotations
 
@@ -37,10 +39,10 @@ from tftsim.params import theta_scale, theta_vector, with_theta
 HOLDOUT = [(1.0, (0.1, 0.2, 0.5)), (2.0, (0.05, 1.0))]     # (L_um, VDs): the paper's validation conditions
 
 
-def holdout_curves(params, vgs):
+def holdout_curves(params, vgs, holdout=HOLDOUT):
     """Transfer curves of a parameter set at the paper's hold-out conditions."""
     out = {}
-    for L, vds in HOLDOUT:
+    for L, vds in holdout:
         _, cv = sweep_device(params, Geometry(L_um=L), vds=vds, vgs=vgs)
         for vd, (vg, i) in cv.items():
             out[f"L{L:g}_VD{vd:g}"] = i
@@ -67,6 +69,7 @@ def main():
     ap.add_argument("--step", type=float, default=0.1)
     ap.add_argument("--sigma", type=float, default=0.02)
     ap.add_argument("--max_nfev", type=int, default=20)
+    ap.add_argument("--vds", default="0.05,1.0", help="drain biases (V) of the L = 1 µm calibration curves")
     ap.add_argument("--out", default=None)
     ap.add_argument("--no_holdout", action="store_true", help="skip predictions at the paper's hold-out conditions")
     ap.add_argument("--init", default=None, help="summary.json of an earlier profile run: each side starts from its nearest record")
@@ -83,7 +86,10 @@ def main():
     lb = np.array([(BOUNDS[n][0] - th_true[k]) / scale[k] for k, n in enumerate(free)])
     ub = np.array([(BOUNDS[n][1] - th_true[k]) / scale[k] for k, n in enumerate(free)])
 
-    model = CurveModel(truth, names, vds=(0.05, 1.0), vgs=vgs)
+    fit_vds = tuple(float(v) for v in args.vds.split(","))
+    holdout = [(L, tuple(vd for vd in vds if not (L == 1.0 and vd in fit_vds))) for L, vds in HOLDOUT]
+    holdout = [(L, vds) for L, vds in holdout if vds]
+    model = CurveModel(truth, names, vds=fit_vds, vgs=vgs)
     meas, _ = model.evaluate(th_true)
     fun_all, jac_all, masks = log_residual_problem(model, meas, args.sigma, th_true, scale)
     n_res = sum(int(m.sum()) for m in masks.values())
@@ -140,14 +146,14 @@ def main():
             dump_json({"param": prof, "names": names, "sigma_dec": args.sigma, "records": records}, f"{out}/partial.json")
     if not args.no_holdout:
         del model                              # DEVSIM holds one device set; the hold-out builds reset it
-        ho_ref = holdout_curves(truth, vgs)
+        ho_ref = holdout_curves(truth, vgs, holdout)
         print(f"hold-out reference curves ready ({clock():.0f} s)")
         for r in records:
             if "error" in r or r["value"] == v_true:
                 continue
             try:
                 th = np.array([r["theta"][n] for n in names])
-                r["holdout"] = holdout_compare(ho_ref, holdout_curves(params_of(th), vgs), vgs)
+                r["holdout"] = holdout_compare(ho_ref, holdout_curves(params_of(th), vgs, holdout), vgs)
                 worst = max(r["holdout"].values(), key=lambda q: q["rms_dec"])
                 print(f"[{prof} = {r['value']:.3f}] hold-out: worst RMS {worst['rms_dec']:.4f} dec, max |dVth| "
                       f"{max(abs(q['dVth_mV']) for q in r['holdout'].values()):.1f} mV ({clock():.0f} s)")
@@ -155,10 +161,11 @@ def main():
                 r["holdout"] = {"error": str(exc)}
     records = [r for r in records if "error" not in r] + [r for r in records if "error" in r]
     ok = sorted([r for r in records if "error" not in r], key=lambda r: r["value"])
-    dump_json({"param": prof, "names": names, "sigma_dec": args.sigma, "vg": vgs, "n_res": n_res,
+    dump_json({"param": prof, "names": names, "sigma_dec": args.sigma, "vg": vgs, "n_res": n_res, "vds": list(fit_vds),
                "records": ok, "failed": [r for r in records if "error" in r],
                "curves": {str(k): v for k, v in curves.items()}, "wall_s": clock()}, f"{out}/summary.json")
-    lines = [f"# E5 profile likelihood of {prof} (Step 5 twin, L = 1 um, VD = 0.05/1.0 V, σ = {args.sigma} dec)", "",
+    vd_txt = "0.05/1.0" if fit_vds == (0.05, 1.0) else "/".join(f"{vd:g}" for vd in fit_vds)
+    lines = [f"# E5 profile likelihood of {prof} (Step 5 twin, L = 1 um, VD = {vd_txt} V, σ = {args.sigma} dec)", "",
              f"{n_res} residuals; profile χ² < 3.84 means statistically indistinguishable from the truth (95 %).", "",
              f"| {prof} | χ² | RMS misfit (dec) | max misfit (dec) | " + " | ".join(free) + " |",
              "|---|---|---|---|" + "---|" * len(free)]

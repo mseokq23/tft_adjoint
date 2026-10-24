@@ -2,8 +2,8 @@
 
 E12 re-fitted our model to the measured 2 %-W calibration curves with ND,eff fixed between
 10^16.85 and 10^19.05 cm^-3: all sets fit equally well (Δχ²_eff ≤ 1.26 against the best free fit
-e11_2W_v3; ≤ 0.77 against the reference used before e11_2W_v3 existed) and give the same errors
-on the paper's transfer tests (drain bias VD = 0.1/0.2/0.5 V, channel length L = 2 µm). This script
+e11_2W_v3; ≤ 0.77 against the reference used before e11_2W_v3 existed) and predict nearly the same
+Vth on the paper's transfer tests (drain bias VD = 0.1/0.2/0.5 V, channel length L = 2 µm). This script
 asks whether those sets nevertheless predict different results for measurements outside the paper's
 split - the measurements the OED analysis (E4/E7) recommends:
   * I-V of a device with a thicker channel (t_IWO = 7 nm), VD = 0.05 / 1.0 V
@@ -11,7 +11,8 @@ split - the measurements the OED analysis (E4/E7) recommends:
   * quasi-static gate C-V of the calibration device (VD = 0)
 For every condition: spread of the predictions across the equivalent sets (Vth, RMS log-current
 deviation from the reference set = lowest χ² on the measured data), next to the spread the same sets
-show on the paper's own transfer tests (from E12). Thresholds: digitisation noise 0.02 dec and the
+show on the paper's own transfer tests (from E12; predicted Vth on the full simulated curves, because the
+digitised transfer curves have gaps around 100 nA). Thresholds: digitisation noise 0.02 dec and the
 model error σ_eff of the measured fit (0.12 dec); for C-V 0.5 % and 2 % of C_ox·A.
 
 The thick-channel device turns on near the start of the default sweep (Vth = -0.77 ... -1.15 V at
@@ -80,6 +81,16 @@ def simulate(sets, out, clock, recompute=(), vgmin_iv=-1.0):
     return pred
 
 
+def full_curve_metrics(s, k):
+    """Vth (mV) and log10 Ion of a set's FULL simulated hold-out curve. The measured transfer curves have
+    digitisation gaps around 100 nA, so a Vth taken on the measured VG points is interpolated across the gap."""
+    h = s.get("holdout", {}).get(k)
+    if not h or "error" in h or "curve" not in h:
+        return None
+    m = extract(np.array(s["vg"]), np.array(h["curve"]))
+    return {"vth_mV": 1e3 * m["vth"], "log10_ion": m["log10_ion"]}
+
+
 def compare(sets, pred, best):
     sig, sig_eff = best["sigma_dec"], best["sigma_eff"]
     chi_min = min(s["chi2"] for s in sets.values())
@@ -88,7 +99,8 @@ def compare(sets, pred, best):
     rows = {}
     for key, s in sets.items():
         r = {"chi2": s["chi2"], "dchi2_eff": (s["chi2"] - chi_min) / scale, "rms_dec": s["rms_dec"],
-             "transfer": {k: {m: s["holdout"][k][m] for m in ("dVth_mV", "dlogIon_dec", "E_log_dec")}
+             "transfer": {k: dict({m: s["holdout"][k][m] for m in ("dVth_mV", "dlogIon_dec", "E_log_dec")},
+                                  full=full_curve_metrics(s, k))
                           for k in TRANSFER if k in s.get("holdout", {}) and "error" not in s["holdout"][k]}}
         for c in CONDS:
             r[c] = {}
@@ -135,9 +147,12 @@ def report(sets, pred, best, out):
               "|---|---|---|---|---|"]
     summ = {"reference": ref, "tests": {}}
     for k in TRANSFER:
-        dv = [rows[s]["transfer"].get(k, {}).get("dVth_mV") for s in keys]
-        di = [rows[s]["transfer"].get(k, {}).get("dlogIon_dec") for s in keys]
-        summ["tests"][k] = {"paper": True, "vth_spread_mV": spread(dv), "ion_spread_dec": spread(di)}
+        full = [(rows[s]["transfer"].get(k) or {}).get("full") for s in keys]
+        dv = [f["vth_mV"] for f in full if f]
+        di = [f["log10_ion"] for f in full if f]
+        dv_m = [rows[s]["transfer"].get(k, {}).get("dVth_mV") for s in keys]
+        summ["tests"][k] = {"paper": True, "vth_spread_mV": spread(dv), "ion_spread_dec": spread(di),
+                            "vth_spread_vs_measured_points_mV": spread(dv_m)}
         lines.append(f"| {k.replace('_', ' ')} | yes (transfer test) | {spread(dv):.1f} | {spread(di):.3f} | – |")
     for c in CONDS:
         for vd in ("0.05", "1"):
@@ -150,8 +165,10 @@ def report(sets, pred, best, out):
     cvm = max(rows[s]["C-V"]["max_dev_pct"] for s in keys)
     summ["tests"]["C-V"] = {"paper": False, "max_dev_pct": cvm}
     lines.append(f"| quasi-static C–V | no | – | – | max ΔC {cvm:.2f} % of C_ox·A |")
-    lines += ["", "Transfer-test spreads are differences between the sets' errors against the MEASURED hold-out curves (E12); "
-              "new-test spreads are differences between the sets' predictions (no data exist)."]
+    lines += ["", "All spreads are between the sets' predictions on their full simulated curves. The measured transfer curves "
+              "(L = 1 µm at VD 0.1/0.2/0.5 V, L = 2 µm at VD 0.05/1 V) have digitisation gaps around 100 nA, so the sets' "
+              "errors against them are "
+              "interpolated across the gap; their spread is kept in summary.json (vth_spread_vs_measured_points_mV)."]
     dump_json({"sets": list(sets), "rows": rows, **summ}, os.path.join(out, "summary.json"))
     with open(os.path.join(out, "summary.md"), "w") as f:
         f.write("\n".join(lines) + "\n")
