@@ -4,7 +4,7 @@
 
 - 저장소: https://github.com/mseokq23/tft_adjoint (공개, 기본 브랜치 `main`)
 - 기준 시점: 2026-10-24. 초록 마감: 2026-11-07(KCS 2027).
-- 현재 상태: 핵심 가설 검증과 결합 보정(E18)까지 끝났습니다(E0–E18). 남은 일은 E19–E21, 가치 판단(C1–C5), 초록 작성, 다른 시뮬레이터 교차 확인입니다(README 6장).
+- 현재 상태: 핵심 가설 검증, 결합 보정(E18), 일반 규칙(E19)까지 끝났습니다(E0–E19). 남은 일은 E20–E21, 가치 판단(C1–C5), 초록 작성, 다른 시뮬레이터 교차 확인입니다(README 6장).
 
 ## 1. 먼저 읽을 것 (순서대로)
 
@@ -76,6 +76,8 @@ python scripts/e0_gradient_check.py         # 약 2분. DEVSIM과 민감도 엔�
 | 결합 보정(E18), 쌍둥이 | VD 5개 160점, ND,eff 10^15.9–10^18.9에서 χ² 최대 0.644 | results/e18/summary.md |
 | 결합 보정(E18), 실측 | VD 5개 93점, 10^16.85–10^19.05에서 Δχ²_eff 최대 2.25(χ²_min 1836.8, σ_eff 0.0935 dec). hold-out L 2 µm의 예측 Vth 차이 9.4/2.5 mV(VD 0.05/1 V) | results/e18/summary.md, results/e18_joint_meas/profile/summary.md |
 | VD·L 시험의 해석적 근거 | 1차원 Pao–Sah: I(VG, VD) = qµ(W/L)∫_{VG−VD}^{VG} N_s(u) du, 2D Step-5와 Vth 1.7 mV 이내 | results/aux_paosah_1d/summary.md |
+| 일반 규칙(E19), 점별 | σ_pred/σ 곡선 RMS: VD 0.02–3 V 0.25–0.41, L 0.5–10 µm 0.43–0.86, t_ox 5–20 nm 41–210, t_IWO 2–10 nm 92–487 | results/e19/summary.md |
+| 일반 규칙(E19), 곡선 전체·비선형 | λ_max 수평 0.84–43 대 수직 1.0e5–1.9e7. E5 세트 10^15.9–10^17.9는 수평 시험 16개 χ² 합 0.07–0.11, 10^18.9는 시험별 최대 3.67(합 20.7) | results/e19/summary.md |
 
 수치를 글에 옮길 때는 반드시 위 파일에서 다시 확인합니다. 133/376 mV는 v2·v3 두 자유 보정 사이의 차이가 포함된 값이라 ND,eff 차이 때문이라고 쓰면 안 됩니다. 측정 대비 전달 시험 ΔVth는 디지타이즈 공백 때문에 근사값입니다(6장 "판독 신뢰도").
 
@@ -96,17 +98,14 @@ python scripts/e0_gradient_check.py         # 약 2분. DEVSIM과 민감도 엔�
   - `fig_core_claim.py` (b)에 결합 보정 profile을 겹치는 개정은 E19와 함께 합니다.
   - L = 2 µm까지 넣은 7곡선 결합 보정: `CurveModel`은 기하 하나만 다루므로, L = 1·2 µm 두 모델의 잔차를 하나로 묶는 확장이 필요합니다. 실측 L = 2 µm 곡선도 공백이 있으므로 `--max_gap`을 함께 씁니다.
 
-### E19 일반 규칙 (선형)
+### E19 일반 규칙 — 완료(2026-10-24)
 
-- 새 스크립트 `scripts/e19_design_rule.py`를 만듭니다.
-- `e3_identifiability_oed_preview.py`의 `sweep_with_grad(params, geom, vds, vgs)`와 `log_rows(vg, i, G)`로 Step-5에서 조건별 감도 행을 계산합니다.
-- `e14`의 `linear_predictive()`와 같은 방식으로 σ_pred/σ를 냅니다. 보정 행은 `results/e3/rows.npz`의 `S_base`, Qf 열은 뺍니다.
-- 후보:
-  - 수평·바이어스: `Geometry(L_um=0.5/5/10)`, VD 0.02–3 V
-  - 수직 구조: `Geometry(t_gox_nm=5–20)`, `Geometry(t_iwo_nm=2–10)`
-- 출력: `results/e19/`(rows.npz, summary.md, 그림)
-- 주의: VD 3 V와 L 0.5 µm는 바이어스 램프 수렴을 먼저 확인합니다.
-- 해석적 기준: `scripts/aux_paosah_1d.py`(1차원 Pao–Sah)에서는 VD·L 시험이 정확히 정보를 더하지 않습니다. E19 결과를 이 기준과 비교하면, 2D 모델에서 벗어나는 부분(접촉·겹침 영역, 단채널 효과)이 드러납니다.
+- 스크립트: `scripts/e19_design_rule.py`. 소자 목록은 `DEVICES`(라벨 → 기하, VD, 묶음)에 있습니다.
+  - `--group lateral|vertical`: Step-5에서 조건별 감도 행(adjoint)을 계산합니다. 소자 하나가 끝날 때마다 `results/e19/rows_<group>.npz`와 `meta_<group>.json`에 저장하므로, 중간에 멈춰도 `--only <라벨>`로 이어 갈 수 있습니다.
+  - `--nonlinear --values ... --tag ...`: E5 세트(보정 χ² < 3.84)를 수평 시험 조건에서 정방향으로 계산해 진짜와의 χ²를 냅니다(`nonlinear_<tag>.json`, 세트마다 저장).
+  - `--report`: 시뮬레이션 없이 `summary.md`·`summary.json`·`e19_design_rule.png`를 만듭니다. 보정 행을 E3 행과, σ_pred/σ를 E14 값과 대조한 결과도 함께 적습니다.
+- 보정 행(L 1 µm, VD 0.05/1 V)은 L1 소자 실행에서 함께 계산합니다(E3 `S_base`를 읽지 않음).
+- 실행 4개를 2개씩 병렬로 돌렸습니다(선형 45·33분, 비선형 78·58분). 비선형은 세트마다 수평 소자 다섯 개를 모두 다시 계산하므로 느립니다(L = 10 µm, 노드 24,897개).
 
 ### E20 식별가능성 표
 
@@ -146,6 +145,10 @@ python scripts/e0_gradient_check.py         # 약 2분. DEVSIM과 민감도 엔�
   - `holdout[k]["dVth_mV"]`(e11)는 모델을 측정 VG에서만 표본화해 같은 공백에 걸쳐 보간한 값입니다. 그래서 세트 간 비교에 쓰면 공백 때문에 값이 달라집니다(예: VD 0.5 V 36.8 mV 대 전체 곡선 1.3 mV). 세트 간 비교는 `holdout[k]["curve"]`와 `vg`로 전체 곡선의 Vth를 계산해서 합니다(e13 `full_curve_metrics`, e14 `vth_full_mV`, e18_report `full_vth`, `fig_core_claim.py` (c), `fig_measured.py` (d)).
   - L = 2 µm의 측정 대비 ΔVth는 표본화만으로 15–24 mV 달라집니다. 절대값을 쓸 때는 이 불확실성을 함께 적습니다.
   - 기본 E11 규칙은 측정 곡선을 격자에 선형 보간하므로, 이 곡선들을 보정에 넣으려면 `--max_gap 0.05`가 필요합니다(빈 구간 보간 금지).
+- **E19 지표 읽기:**
+  - σ_pred/σ는 점별 기준입니다. 곡선 전체에서 시험이 세트를 기각할 수 있는지는 λ_max(모든 방향)와 q(ND,eff profile 방향)로 봅니다. 수평 시험은 점별로는 1 미만이어도 곡선 전체로는 λ_max가 1을 넘을 수 있습니다(L = 2 µm 8.4).
+  - χ²는 점 수에 비례합니다. 비선형 확인은 E5·E9와 같은 VG 0.1 V 간격이고, 선형 행은 0.05 V 간격입니다. 점 간격이 다르면 χ²를 직접 비교하지 않습니다.
+  - 보정 곡선의 첫 점(10 pA 이상)은 VG −0.60 V입니다. 전류가 큰 시험(짧은 L)은 그보다 깊은 아문턱 점을 갖게 되고, 그 점이 σ_pred/σ 최대값을 만듭니다(보고서의 "max in window" 열).
 - **E18 χ² 비교:** `--max_gap`을 쓰면 VD 0.05 V 잔차도 두 점(0.1, 0.2 V) 줄어듭니다. E18의 χ²·σ_eff(0.0935 dec)는 E11·E12(σ_eff 0.119 dec)와 직접 비교하지 않습니다.
 
 ## 7. 교차 확인 상태

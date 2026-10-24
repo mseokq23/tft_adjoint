@@ -1,0 +1,394 @@
+{
+  "tox5_VD0.05": {
+    "device": "tox5",
+    "vd": 0.05,
+    "geom": {
+      "L_um": 1.0,
+      "Lov_um": 1.5,
+      "W_um": 5.0,
+      "t_iwo_nm": 3.5,
+      "t_gox_nm": 5.0,
+      "t_pas_nm": 5.0
+    },
+    "n_rows": 62,
+    "vth_V": -0.14773670609016779,
+    "ss_mVdec": 118.19369933349162,
+    "ion_A": 4.882596878594722e-05,
+    "i_at_vgmin_A": 1.3184639738720114e-26,
+    "off_reached": true,
+    "vg_range_used": [
+      -0.55,
+      2.5
+    ]
+  },
+  "tox5_VD1": {
+    "device": "tox5",
+    "vd": 1.0,
+    "geom": {
+      "L_um": 1.0,
+      "Lov_um": 1.5,
+      "W_um": 5.0,
+      "t_iwo_nm": 3.5,
+      "t_gox_nm": 5.0,
+      "t_pas_nm": 5.0
+    },
+    "n_rows": 62,
+    "vth_V": -0.18251309338842578,
+    "ss_mVdec": 110.13552472800754,
+    "ion_A": 0.0007861398227585527,
+    "i_at_vgmin_A": 1.5506555581310948e-26,
+    "off_reached": true,
+    "vg_range_used": [
+      -0.55,
+      2.5
+    ]
+  },
+  "tox5": {
+    "nodes": 5262,
+    "wall_s": 143.4,
+    "failed_vd": []
+  },
+  "tox10_VD0.05": {
+    "device": "tox10",
+    "vd": 0.05,
+    "geom": {
+      "L_um": 1.0,
+      "Lov_um": 1.5,
+      "W_um": 5.0,
+      "t_iwo_nm": 3.5,
+      "t_gox_nm": 10.0,
+      "t_pas_nm": 5.0
+    },
+    "n_rows": 64,
+    "vth_V": -0.1030920400886789,
+    "ss_mVdec": 157.88920118571505,
+    "ion_A": 2.379068311983934e-05,
+    "i_at_vgmin_A": 8.1663626107056735e-25,
+    "off_reached": true,
+    "vg_range_used": [
+      -0.65,
+      2.5
+    ]
+  },
+  "tox10_VD1": {
+    "device": "tox10",
+    "vd": 1.0,
+    "geom": {
+      "L_um": 1.0,
+      "Lov_um": 1.5,
+      "W_um": 5.0,
+      "t_iwo_nm": 3.5,
+      "t_gox_nm": 10.0,
+      "t_pas_nm": 5.0
+    },
+    "n_rows": 64,
+    "vth_V": -0.1714379822249343,
+    "ss_mVdec": 140.75875920187474,
+    "ion_A": 0.00037979386523855584,
+    "i_at_vgmin_A": 9.626385436941776e-25,
+    "off_reached": true,
+    "vg_range_used": [
+      -0.65,
+      2.5
+    ]
+  },
+  "tox10": {
+    "nodes": 6725,
+    "wall_s": 189.6,
+    "failed_vd": []
+  },
+  "tox14_VD0.05": {
+    "device": "tox14",
+    "vd": 0.05,
+    "geom": {
+      "L_um": 1.0,
+      "Lov_um": 1.5,
+      "W_um": 5.0,
+      "t_iwo_nm": 3.5,
+      "t_gox_nm": 14.0,
+      "t_pas_nm": 5.0
+    },
+    "n_rows": 65,
+    "vth_V": -0.06740207177557045,
+    "ss_mVdec": 189.92374755555872,
+    "ion_A": 1.653433522946296e-05,
+    "i_at_vgmin_A": 2.204495351763233e-23,
+    "off_reached": true,
+    "vg_range_used": [
+      -0.7,
+      2.5
+    ]
+  },
+  "tox14_VD1": {
+    "device": "tox14",
+    "vd": 1.0,
+    "geom": {
+      "L_um": 1.0,
+      "Lov_um": 1.5,
+      "W_um": 5.0,
+      "t_iwo_nm": 3.5,
+      "t_gox_nm": 14.0,
+      "t_pas_nm": 5.0
+    },
+    "n_rows": 66,
+    "vth_V": -0.16725831255828405,
+    "ss_mVdec": 163.85513528306873,
+    "ion_A": 0.0002619999620059461,
+    "i_at_vgmin_A": 2.605945933685016e-23,
+    "off_reached": true,
+    "vg_range_used": [
+      -0.75,
+      2.5
+    ]
+  },
+  "tox14": {
+    "nodes": 7770,
+    "wall_s": 238.4,
+    "failed_vd": []
+  },
+  "tox20_VD0.05": {
+    "device": "tox20",
+    "vd": 0.05,
+    "geom": {
+      "L_um": 1.0,
+      "Lov_um": 1.5,
+      "W_um": 5.0,
+      "t_iwo_nm": 3.5,
+      "t_gox_nm": 20.0,
+      "t_pas_nm": 5.0
+    },
+    "n_rows": 67,
+    "vth_V": -0.014358262735549347,
+    "ss_mVdec": 237.71583631192192,
+    "ion_A": 1.1053490158908024e-05,
+    "i_at_vgmin_A": 3.02567234524016e-21,
+    "off_reached": true,
+    "vg_range_used": [
+      -0.8,
+      2.5
+    ]
+  },
+  "tox20_VD1": {
+    "device": "tox20",
+    "vd": 1.0,
+    "geom": {
+      "L_um": 1.0,
+      "Lov_um": 1.5,
+      "W_um": 5.0,
+      "t_iwo_nm": 3.5,
+      "t_gox_nm": 20.0,
+      "t_pas_nm": 5.0
+    },
+    "n_rows": 68,
+    "vth_V": -0.16660258463018693,
+    "ss_mVdec": 197.04544889361662,
+    "ion_A": 0.00017306586644628212,
+    "i_at_vgmin_A": 3.599446228592588e-21,
+    "off_reached": true,
+    "vg_range_used": [
+      -0.85,
+      2.5
+    ]
+  },
+  "tox20": {
+    "nodes": 9442,
+    "wall_s": 240.5,
+    "failed_vd": []
+  },
+  "tiwo2_VD0.05": {
+    "device": "tiwo2",
+    "vd": 0.05,
+    "geom": {
+      "L_um": 1.0,
+      "Lov_um": 1.5,
+      "W_um": 5.0,
+      "t_iwo_nm": 2.0,
+      "t_gox_nm": 7.0,
+      "t_pas_nm": 5.0
+    },
+    "n_rows": 61,
+    "vth_V": -0.13651811189870086,
+    "ss_mVdec": 101.92201949298796,
+    "ion_A": 3.574028019891539e-05,
+    "i_at_vgmin_A": 7.2945136114918325e-28,
+    "off_reached": true,
+    "vg_range_used": [
+      -0.5,
+      2.5
+    ]
+  },
+  "tiwo2_VD1": {
+    "device": "tiwo2",
+    "vd": 1.0,
+    "geom": {
+      "L_um": 1.0,
+      "Lov_um": 1.5,
+      "W_um": 5.0,
+      "t_iwo_nm": 2.0,
+      "t_gox_nm": 7.0,
+      "t_pas_nm": 5.0
+    },
+    "n_rows": 61,
+    "vth_V": -0.16268084444149203,
+    "ss_mVdec": 96.22147933920928,
+    "ion_A": 0.0005759599978131905,
+    "i_at_vgmin_A": 8.553721218114464e-28,
+    "off_reached": true,
+    "vg_range_used": [
+      -0.5,
+      2.5
+    ]
+  },
+  "tiwo2": {
+    "nodes": 4635,
+    "wall_s": 142.4,
+    "failed_vd": []
+  },
+  "tiwo5_VD0.05": {
+    "device": "tiwo5",
+    "vd": 0.05,
+    "geom": {
+      "L_um": 1.0,
+      "Lov_um": 1.5,
+      "W_um": 5.0,
+      "t_iwo_nm": 5.0,
+      "t_gox_nm": 7.0,
+      "t_pas_nm": 5.0
+    },
+    "n_rows": 65,
+    "vth_V": -0.127283855777093,
+    "ss_mVdec": 171.6381517150205,
+    "ion_A": 3.36496404022313e-05,
+    "i_at_vgmin_A": 1.573403898083452e-23,
+    "off_reached": true,
+    "vg_range_used": [
+      -0.7,
+      2.5
+    ]
+  },
+  "tiwo5_VD1": {
+    "device": "tiwo5",
+    "vd": 1.0,
+    "geom": {
+      "L_um": 1.0,
+      "Lov_um": 1.5,
+      "W_um": 5.0,
+      "t_iwo_nm": 5.0,
+      "t_gox_nm": 7.0,
+      "t_pas_nm": 5.0
+    },
+    "n_rows": 66,
+    "vth_V": -0.20092111269648916,
+    "ss_mVdec": 153.2619302667053,
+    "ion_A": 0.0005392127486469683,
+    "i_at_vgmin_A": 1.8552053907337805e-23,
+    "off_reached": true,
+    "vg_range_used": [
+      -0.75,
+      2.5
+    ]
+  },
+  "tiwo5": {
+    "nodes": 7143,
+    "wall_s": 257.3,
+    "failed_vd": []
+  },
+  "tiwo7_VD0.05": {
+    "device": "tiwo7",
+    "vd": 0.05,
+    "geom": {
+      "L_um": 1.0,
+      "Lov_um": 1.5,
+      "W_um": 5.0,
+      "t_iwo_nm": 7.0,
+      "t_gox_nm": 7.0,
+      "t_pas_nm": 5.0
+    },
+    "n_rows": 69,
+    "vth_V": -0.13093719464675685,
+    "ss_mVdec": 233.20150400090648,
+    "ion_A": 3.252530729614223e-05,
+    "i_at_vgmin_A": 1.0363271395224789e-19,
+    "off_reached": true,
+    "vg_range_used": [
+      -0.9,
+      2.5
+    ]
+  },
+  "tiwo7_VD1": {
+    "device": "tiwo7",
+    "vd": 1.0,
+    "geom": {
+      "L_um": 1.0,
+      "Lov_um": 1.5,
+      "W_um": 5.0,
+      "t_iwo_nm": 7.0,
+      "t_gox_nm": 7.0,
+      "t_pas_nm": 5.0
+    },
+    "n_rows": 70,
+    "vth_V": -0.25238869124550406,
+    "ss_mVdec": 201.92223555993016,
+    "ion_A": 0.0005219429851782379,
+    "i_at_vgmin_A": 1.2300165384433877e-19,
+    "off_reached": true,
+    "vg_range_used": [
+      -0.95,
+      2.5
+    ]
+  },
+  "tiwo7": {
+    "nodes": 8815,
+    "wall_s": 323.9,
+    "failed_vd": []
+  },
+  "tiwo10_VD0.05": {
+    "device": "tiwo10",
+    "vd": 0.05,
+    "geom": {
+      "L_um": 1.0,
+      "Lov_um": 1.5,
+      "W_um": 5.0,
+      "t_iwo_nm": 10.0,
+      "t_gox_nm": 7.0,
+      "t_pas_nm": 5.0
+    },
+    "n_rows": 78,
+    "vth_V": -0.14362076579694086,
+    "ss_mVdec": 354.69008615460143,
+    "ion_A": 3.062856380970558e-05,
+    "i_at_vgmin_A": 2.9650384109942155e-13,
+    "off_reached": true,
+    "vg_range_used": [
+      -1.35,
+      2.5
+    ]
+  },
+  "tiwo10_VD1": {
+    "device": "tiwo10",
+    "vd": 1.0,
+    "geom": {
+      "L_um": 1.0,
+      "Lov_um": 1.5,
+      "W_um": 5.0,
+      "t_iwo_nm": 10.0,
+      "t_gox_nm": 7.0,
+      "t_pas_nm": 5.0
+    },
+    "n_rows": 78,
+    "vth_V": -0.40906701482667696,
+    "ss_mVdec": 280.1468059231004,
+    "ion_A": 0.0004945163008543346,
+    "i_at_vgmin_A": 3.9540877928313554e-13,
+    "off_reached": true,
+    "vg_range_used": [
+      -1.35,
+      2.5
+    ]
+  },
+  "tiwo10": {
+    "nodes": 11323,
+    "wall_s": 465.5,
+    "failed_vd": []
+  }
+}
