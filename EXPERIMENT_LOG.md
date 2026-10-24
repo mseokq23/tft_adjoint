@@ -136,7 +136,7 @@
 - adjoint 속도 이점은 4–8배로 작습니다. 실익은 고차원 국소 민감도(E4, E6)와 기울기 기반 profile·OED입니다.
 - 일부 결론은 교과서적입니다(Qf–Φ_MS 분리에 t_ox 시리즈). OED가 이를 자동으로 다시 찾아낸다는 검증으로 씁니다.
 - sloppiness·profile likelihood 자체는 기존 방법입니다(Gutenkunst et al., PLoS Comput. Biol. 2007; Raue et al., Bioinformatics 2009). 새 방법이 아니라 TCAD 보정 검증 관행에 적용하고 정량화한 것으로 서술합니다.
-- 관련 선행연구(조사한 범위): compact model Bayesian/OED(Li Yu et al., IEEE TCAD 2016), 초박막 a-IGZO 계면·벌크 donor 분리 어려움의 정성 언급(Subhechha et al., SISPAD 2025), C–V+I–V 계면/벌크 DOS 분리(Chen et al., Materials 2018), TCAD 역문제 비유일성의 정성 논의(H. Y. Wong, arXiv:2609.07046). adjoint TCAD 자체는 신규가 아닙니다(DEVSIM 2009, Charon/Sacado, Burger–Pinnau 2003, Khalil 1995).
+- 관련 선행연구(C4 점검, 2026-10-24; README 5장): VD·L 전달 시험 통과가 파라미터를 정하지 않음을 수치로 보인 연구는 찾지 못함(부분 겹침만 있음). 알려진 것: 비유일성(Jeong 2026 초록이 직접 인정; Kimura et al., Adv. Intell. Syst. 2026의 a-IGZO 역문제 다가성; Wong arXiv:2609.07046 정성 논의), 초박막 채널에서 계면·벌크 donor 분리의 어려움(Subhechha et al., SISPAD 2025 본문 III절: "The ultrathin channel hinders separating the contribution of donor states in a-IGZO from those of interface states"), 두께 분할·C–V로 계면/벌크 분리(S. Choi et al., IEEE EDL 40(4); Chen et al., Materials 2018), donor ≡ acceptor + 고정전하 항등(Jana–Gupta–Gupta, arXiv:2303.13902), compact model Bayesian/OED(Li Yu et al., IEEE TCAD 2016). 그래서 기여는 "전달 시험 논리의 정량적 반증 + 수평/수직 시험 설계 규칙". adjoint TCAD 자체는 신규가 아닙니다(DEVSIM 2009, Charon/Sacado, Burger–Pinnau 2003, Khalil 1995).
 
 ## 해석할 때 주의할 점
 
@@ -155,5 +155,5 @@ README.md 6장에 자세히 적었습니다. 요약:
 1. ~~E18 결합 보정 profile~~ 완료(2026-10-24): 쌍둥이 1000배, 실측 약 160배에서 비식별 유지
 2. ~~E19 일반 규칙~~ 완료(2026-10-24): 수평·바이어스 시험 곡선 RMS 0.25–0.86 대 수직 41–487, ND,eff 약 300배 낮춘 세트도 수평 시험 16개 통과(C3 충족)
 3. ~~E20 식별가능성 표, E21 강건성~~ 완료(2026-10-24): 실측 최적점에서 보정만으로는 ND,eff 1σ 7.3 dec, 추천 측정 세 개(C–V 0.5 %)로 이 점의 선형 1σ가 모든 descriptor 0.2 dec·15 meV 이내. ε_ch = 15에도 등가 유지, 시작점이 다른 자유 보정 6개가 모두 등가인데 N_TA 약 270배 차이
-4. 가치 판단(C1–C5) 후 초록 작성(마감 2026-11-07)
+4. 가치 판단: C1–C3 충족, C4 부분 겹침만 있음(위치 설정 조정, README 5장·6.3), C5 충족 예상 → 초안 작성 조건 충족. 다음은 초록 작성(마감 2026-11-07)과 그림(fig_core_claim 개정판)
 5. 병행: 다른 시뮬레이터 교차 확인(results/crosscheck)
