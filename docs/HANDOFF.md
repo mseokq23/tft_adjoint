@@ -3,8 +3,8 @@
 이 문서는 작업을 새 환경이나 새 세션에서 정보 손실 없이 이어 가기 위한 것입니다. 연구 내용 해설은 [README.md](../README.md), 실험별 수치는 [EXPERIMENT_LOG.md](../EXPERIMENT_LOG.md)에 있습니다.
 
 - 저장소: https://github.com/mseokq23/tft_adjoint (공개, 기본 브랜치 `main`)
-- 기준 시점: 2026-10-24. 초록 마감: 2026-11-07(KCS 2027).
-- 현재 상태: 1단계 가설검증 실험이 모두 끝났습니다(E0–E21: 결합 보정 E18, 일반 규칙 E19, 식별가능성 표 E20, 강건성 E21 포함). 가치 판단은 C4 점검(2026-10-24, 부분 겹침만 있음)까지 마쳐 초안 작성 조건을 충족했습니다(README 5장·6.3). 1쪽 초록 초안과 초록 그림, 논문용 자료(`docs/paper/`)를 만들었습니다. 남은 일은 초록 마무리(저자·소속 기입, 제출), 마감 전 선행연구 재확인, 전체 논문 작성, 다른 시뮬레이터 교차 확인입니다(README 6장).
+- 기준 시점: 2026-10-25. 초록 마감: 2026-11-07(KCS 2027).
+- 현재 상태: 1단계 가설검증 실험이 모두 끝났습니다(E0–E21: 결합 보정 E18, 일반 규칙 E19, 식별가능성 표 E20, 강건성 E21 포함). 가치 판단은 C4 점검(2026-10-24, 부분 겹침만 있음)까지 마쳐 초안 작성 조건을 충족했습니다(README 5장·6.3). 1쪽 초록 초안과 초록 그림, 논문용 자료(`docs/paper/`)를 만들었습니다. 2026-10-25에 기준 논문 저자의 공개 데모에서 같은 결론을 확인했습니다(E22). 남은 일은 초록 마무리(저자·소속 기입, 제출), 마감 전 선행연구 재확인, 전체 논문 작성, 다른 시뮬레이터 교차 확인입니다(README 6장).
 
 ## 1. 먼저 읽을 것 (순서대로)
 
@@ -81,6 +81,7 @@ python scripts/e0_gradient_check.py         # 약 2분. DEVSIM과 민감도 엔�
 | 재료 상수 ε_ch(E21) | ε_ch 15로 ND,eff 양 끝 재보정: χ² 1631.4/1608.4(기본 재료 1634.0/1606.3), 두 끝 Δχ²_eff 0.66, 기본 재료 χ²_min 기준 1.19/0.54 | results/e21/summary.md 1절, results/e14/summary.md 4절 |
 | 시작점 의존성(E21) | 자유 보정 6개(v2·v3, 시작점 Step 5·4%-W·경계 중간값·E12 10^16.85) 모두 Δχ²_eff ≤ 1.10. N_TA 10^18.0–10^20.5(약 270배), 게이트 WF 182 mV, σ_GD 0.020–0.197 eV 차이. 전달 시험 Vth 예측 퍼짐 1.9–4.9 mV | results/e21/summary.md 2절 |
 | 식별가능성 표(E20, 실측 결합 최적점) | 선형 1σ(σ_eff 0.0935 dec, Qf 고정). 보정 데이터만: ND,eff 7.3 dec(2곡선 8.0), N_TA 3.9 dec, 게이트 WF 1.21 eV. t_ox 14 nm·t_IWO 7 nm·C–V(0.5 %) 모두 추가: 이 점의 선형 1σ가 ND,eff 0.18 dec, 모든 descriptor 0.2 dec·15 meV 이내(C–V 2 %면 ND,eff 0.34, N_GD 0.45 dec). 점에 크게 좌우되는 국소값(2곡선 보정의 등가 점들에서 보정만 ND,eff 1σ 2.4–860 dec) | results/e20/summary.md, results/e21/summary.md |
+| 공개 데모(E22) | φ_G–Q_f 등가 Q_f 4.5–10×10¹² cm⁻²(φ_G 4.20–4.55 eV), 등가 세트의 Vth 차이 VD·L 시험 0 mV 대 t_ox 14 nm 350 mV; 데모 컨트롤러 15회 Q_f 5.7–10×10¹²(t_ox 20 nm 오차 +5 ~ −499 mV) → t_ox 14 nm 곡선 1개 추가 시 5.62–5.67×10¹²; 계면 트랩 항 미지수면 N_tail 3.4 dec 등가, t_ch 분할만 가름(SS 차이 7 nm 33 mV/dec) | results/e22/summary.md, results/e22/summary.json |
 
 수치를 글에 옮길 때는 반드시 위 파일에서 다시 확인합니다. 133/376 mV는 v2·v3 두 자유 보정 사이의 차이가 포함된 값이라 ND,eff 차이 때문이라고 쓰면 안 됩니다. 측정 대비 전달 시험 ΔVth는 디지타이즈 공백 때문에 근사값입니다(6장 "판독 신뢰도").
 
@@ -130,6 +131,15 @@ python scripts/e0_gradient_check.py         # 약 2분. DEVSIM과 민감도 엔�
 - `docs/paper/`: 핵심 수치표(`key_numbers.md`, `scripts/paper_numbers.py`로 저장된 결과에서 다시 계산), 참고문헌(`references.bib`, 확인하지 못한 서지는 `note`에 표시), 그림 목록과 서술 원칙.
 - 초록 그림: `results/fig_kcs_abstract.png`(`scripts/fig_kcs_abstract.py`, 1행 3패널).
 - 초록·논문 원고는 저장소에 두지 않고 비공개로 관리합니다. 원고의 숫자는 `key_numbers.md`와 대조합니다.
+
+### E22 공개 데모 모호성 분석 — 완료(2026-10-25)
+
+- 스크립트: `scripts/e22_demo_ambiguity.py`(약 2분), 그림 `scripts/fig_e22_demo.py`. 결과는 `results/e22/summary.md`·`summary.json`·`fig_e22_demo.png`입니다.
+- 환경: 데모를 설치해 import하므로 DEVSIM 환경과 별도인 Python 3.11 venv가 필요합니다(README 7장: `git clone https://github.com/gyulab/agentic-TCAD-calibration-public demo`, commit ccaa678, `requirements-lock.txt` + `pip install -e demo --no-deps`). 그림 스크립트는 어느 환경에서도 돌아갑니다(matplotlib만 사용).
+- 데모 코드는 수정하지 않습니다. 두께 조건은 `GeoCondition`(데모 `Condition`의 하위 클래스)과 `GeoSimulator`(조건마다 `DeviceConstants`의 t_ox·t_ch를 바꾼 `CompactTFT`)로 넣었습니다. n_interface는 t_ox에 비례하게 바꿉니다(C_it 고정 가정). `free_cit=True`이면 `n_it`가 보정 파라미터가 됩니다.
+- 데모의 `Workspace`·`Controller`·`RulePlanner`를 그대로 씁니다. 새로 만든 것은 `JointReachController`(활성화 판정에 joint-reach OR 조건)뿐이고, 기본 실행의 끝점이 비트 단위로 같은지 스크립트가 확인합니다(`identical_to_demo`).
+- 결과는 결정적입니다. 같은 명령을 다시 돌리면 `summary.json`이 같습니다.
+- 데모 저장소가 갱신되면 결과가 달라질 수 있으므로 commit ccaa678을 기준으로 둡니다.
 
 ### 문서 갱신
 

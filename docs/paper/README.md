@@ -29,6 +29,7 @@
 | `results/e19/e19_design_rule.png` | E19 일반 규칙 6패널 |
 | `results/e13/e13_predictions.png` | 실측 등가 세트의 두께·C–V 예측 |
 | `results/aux_paosah_1d/` | 1차원 Pao–Sah 해석(VD·L 시험이 정보를 더하지 않는 이유) |
+| `results/e22/fig_e22_demo.png` | 기준 논문 저자의 공개 데모에서의 확인(E22): Q_f profile, 데모 컨트롤러 15회 끝점, 계면 트랩 항을 미지수로 둘 때의 N_tail profile |
 
 ## 서술 원칙
 

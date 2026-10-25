@@ -6,7 +6,7 @@
 - 가제(미확정): "Adjoint 민감도 기반 오픈소스 TCAD를 이용한 산화물 반도체 TFT 보정, 파라미터 식별가능성 분석 및 최적 측정조건 설계". 최종 제목은 아래 핵심 주장 중심으로 정합니다([6.3](#63-2단계--가치-판단)).
 - 핵심 주장: **드레인 바이어스·채널 길이 전달 시험(transfer test)을 통과해도 보정 파라미터는 하나로 정해지지 않는다.**
 - 기준 논문: G. Jeong et al., *Agentic TCAD Calibration Workflow for Oxide Semiconductor Transistors*, arXiv:2609.12184 v2 (2026-09-14).
-- 현재 단계(2026-10-24): 1단계 가설검증 실험(E0–E21: 결합 보정 E18, 일반 규칙 E19, 식별가능성 표 E20, 강건성 E21 포함)과 가치 판단(C1–C5, 선행연구 점검 포함)을 마쳤고, 1쪽 초록 초안을 만들었습니다(원고는 비공개, 그림·숫자표·참고문헌은 [`docs/paper/`](docs/paper/README.md)). 남은 일은 초록 마무리와 전체 논문입니다([5장](#5-선행연구와의-관계), [6장](#6-앞으로-할-일--연구-완성을-위한-남은-작업)).
+- 현재 단계(2026-10-25): 1단계 가설검증 실험(E0–E21: 결합 보정 E18, 일반 규칙 E19, 식별가능성 표 E20, 강건성 E21 포함)과 가치 판단(C1–C5, 선행연구 점검 포함)을 마쳤고, 1쪽 초록 초안을 만들었습니다(원고는 비공개, 그림·숫자표·참고문헌은 [`docs/paper/`](docs/paper/README.md)). 기준 논문 저자의 공개 데모에서도 같은 결론을 확인했습니다(E22, [3.10](#310-기준-논문-공개-데모에서의-확인-e22)). 남은 일은 초록 마무리와 전체 논문입니다([5장](#5-선행연구와의-관계), [6장](#6-앞으로-할-일--연구-완성을-위한-남은-작업)).
 - 새 세션에서 이어서 작업할 때는 [`docs/HANDOFF.md`](docs/HANDOFF.md)부터 읽으세요. 실험별 핵심 수치는 [`EXPERIMENT_LOG.md`](EXPERIMENT_LOG.md)에 있습니다.
 
 ## 목차
@@ -62,6 +62,10 @@
    - 논문 모델의 예측력(전달성) 자체를 부정하지 않습니다. 논문의 "모호성 감소" 서술, 그리고 개별 descriptor 변화를 공정 해석에 쓰는 것에 대한 반례입니다.
    - 비유일성 자체, 두께 분할·C–V를 이용한 분리, donor/acceptor 항등은 알려진 것입니다. 이 연구의 기여는 전달 시험 논리의 정량적 반증과 수평/수직 시험 설계 규칙입니다([5장](#5-선행연구와의-관계)).
    - 2%-W 데이터는 논문 4%-W의 DOS 조합을 Step-5 조합보다 더 강하게 기각합니다(E17). W 조성에 따라 DOS 조합이 달라진다는 해석과 부합합니다. 다만 그것을 ND,eff 감소, 꼬리 폭 증가 같은 개별 descriptor 변화로 나누는 것은 식별되지 않습니다(E12, E15).
+9. **기준 논문의 공개 데모에서도 같습니다(E22).** 저자가 공개한 데모(해석적 compact model, 합성 데이터)는 φ_G와 Q_f가 조합만 식별된다고 문서에 밝혀 두었습니다. E22는 그 범위와 예측 영향을 정량화했습니다.
+   - 데모 보정 데이터에서 Q_f 4.5–10×10¹² cm⁻², φ_G 4.20–4.55 eV가 모두 같은 J를 줍니다. 이 등가 세트들이 예측하는 VD·L 보류 시험의 차이는 0 mV입니다. t_ox 14 nm 소자에서는 350 mV입니다.
+   - 데모 컨트롤러를 trust radius만 바꿔 다시 돌리면 15회 모두 보류 시험을 17.2 mV 안에서 통과합니다. 그런데 끝점 Q_f는 5.7–10×10¹²로 흩어지고, t_ox 20 nm Vth 예측은 +5 ~ −499 mV로 갈립니다. t_ox 14 nm 곡선 1개를 보정에 넣으면 15회가 Q_f 5.62–5.67×10¹²(진짜 6×10¹²)로 모입니다.
+   - 데모가 고정한 계면 트랩 항을 미지수로 두면 tail state 밀도와 정확히 축퇴합니다(3.4 dec). t_ox 분할로는 풀리지 않고 t_ch 분할로만 풀립니다.
 
 핵심 그림: [`results/fig_core_claim.png`](results/fig_core_claim.png) (설명은 [3.9](#39-그림)).
 
@@ -637,6 +641,44 @@ G. Jeong et al., arXiv:2609.12184 v2. LLM 에이전트가 Sentaurus TCAD 보정 
 
 실험별 그림은 각 `results/<실험>/` 폴더에 있습니다.
 
+**[`results/e22/fig_e22_demo.png`](results/e22/fig_e22_demo.png)** — E22 3패널입니다(`scripts/fig_e22_demo.py`).
+
+- (a) 데모 보정 데이터의 Q_f profile과, t_ox 14 nm 곡선 1개를 추가했을 때의 profile
+- (b) 데모 컨트롤러 15회의 끝점: 보류 VD·L 시험 오차 대 t_ox 20 nm Vth 오차
+- (c) 계면 트랩 항을 미지수로 두었을 때의 N_tail profile: t_ox 대 t_ch 곡선 추가
+
+### 3.10 기준 논문 공개 데모에서의 확인 (E22)
+
+기준 논문 저자가 공개한 데모(G. Jeong, *Agentic TCAD Calibration: Reproducible Open Demo*, https://github.com/gyulab/agentic-TCAD-calibration-public, MIT License, commit ccaa678)에서 같은 모호성이 나타나는지 확인했습니다. (`results/e22`, 상세는 [`results/e22/summary.md`](results/e22/summary.md))
+
+- **데모의 구성.**
+  - 논문의 보정 루프(잔차 → OFAT → bounded Gauss–Newton → J가 줄 때만 수락, 모델 항 활성화, 보류 시험)를 합성 데이터와 closed-form compact model로 재현한 것입니다. Sentaurus나 DEVSIM이 아닙니다.
+  - V_T = φ_G − χ − qQ_f/C_ox, n = 1 + C_it/C_ox + qN_tail·t_ch/C_ox이고, C_it/C_ox(0.10)는 고정 상수입니다.
+  - 합성 진짜에는 게이트 의존 이동도와 DIBL이 있어, 모델 형태 오차가 일부러 남습니다.
+  - 데모 문서(methodology 6장)는 φ_G와 Q_f가 조합만 식별된다고 이미 밝힙니다. E22는 이것을 새 발견으로 주장하지 않고, 범위·예측 영향·해소 시험을 정량화합니다.
+  - 데모 코드는 수정하지 않았습니다. 기본 실행은 README 값(J 20.77 → 0.407, 보류 시험 16.9/17.0 mV)과 같게 재현되었습니다.
+- **φ_G–Q_f.**
+  - Δφ_G = qΔQ_f/C_ox(Q_f 10¹² cm⁻²당 63.3 mV) 방향으로는 보정·보류 곡선이 4×10⁻¹⁵ dec 안에서 같습니다. 데모 자신의 잔차 Jacobian에서도 특이값 비가 1.5×10⁻⁸입니다.
+  - 허용 범위 안에서 Q_f 4.5–10×10¹² cm⁻²와 φ_G 4.20–4.55 eV가 등가입니다.
+  - 이 등가 세트들이 예측하는 Vth의 차이는 다음과 같습니다.
+    - VD 0.1/0.2/0.5 V, L 2 µm, t_ch 2·7 nm 시험: 0 mV
+    - t_ox 5/10/14/20 nm 소자: 100/150/350/650 mV
+  - 데모 끝점은 보류 시험을 17 mV 안에서 통과하지만, t_ox 14 nm 소자의 Vth는 −223 mV 틀리게 예측합니다.
+- **데모 컨트롤러의 경로 의존성.** trust radius 0.3–0.7과 시작 φ_G 3개로 15회 실행했습니다.
+  - 데모 보정 세트에서는 모두 비슷하게 끝납니다(J 0.403–0.434, 보류 시험 최대 15.8–17.2 mV). 그런데 끝점 Q_f는 5.7–10×10¹², φ_G는 4.28–4.55 eV로 흩어집니다. 그 결과 t_ox 20 nm Vth 오차가 +5 ~ −499 mV로 갈립니다.
+  - t_ox 14 nm(VD 0.05 V) 곡선 1개를 보정에 넣으면 15회 모두 Q_f 5.62–5.67×10¹², φ_G 4.283–4.286 eV로 모입니다. 이때 보류 두께 시험 오차는 t_ox 10 nm −7 mV, 20 nm +11 ~ +14 mV입니다.
+  - profile(σ_eff 기준)로 보면, 데모 세트는 Q_f 4.6–10×10¹²에서 평탄합니다. t_ox 곡선을 추가하면 5.66–5.76×10¹²로 좁혀집니다. 진짜 6×10¹²와의 −5 % 차이는 데모 진짜에 넣은 모델 형태 오차 때문이며, 곡선 적합 구간에는 들어가지 않습니다.
+- **계면 트랩 항을 미지수로 둘 때(확장 가정).**
+  - 한 채널 두께에서는 n_it + qN_tail·t_ch/C_ox만 정해집니다. 그래서 N_tail 10¹⁶–2.4×10¹⁹(3.4 dec)가 모두 같은 J를 줍니다.
+  - VD·L 시험과 t_ox 분할은 이 집합을 가르지 못합니다. 두 항이 모두 1/C_ox로 변하기 때문입니다.
+  - t_ch 분할만 가릅니다. 등가 집합 안의 SS 차이가 t_ch 7 nm에서 33 mV/dec입니다. t_ch 7 nm 곡선을 넣은 profile은 N_tail 1.71×10¹⁹(진짜 2×10¹⁹)에서 정해집니다.
+  - 데모 규칙 그대로면 이때 SS를 계면 트랩으로 설명하고 tail state를 켜지 않습니다. 보류 시험은 13.3 mV 안에서 통과하지만, t_ch 7 nm 소자의 SS는 −26 mV/dec 틀립니다.
+  - 두 가지를 더하면 t_ch 곡선이 있을 때만 tail state를 고르고, n_it 0.13–0.14와 N_tail 1.83–1.85×10¹⁹(진짜 0.10, 2×10¹⁹)를 회수합니다.
+    - 활성화 판정에 "활성 파라미터를 함께 움직여도 잔차의 절반 이상이 남는가"라는 OR 조건을 더합니다. 이 조건을 더해도 기본 실행의 끝점은 비트 단위로 같습니다.
+    - n_it를 tail_states 그룹에 함께 넣습니다. 데모가 fixed_charge 그룹에 φ_G를 넣은 방식과 같습니다.
+- **가정.** 두께 분할에서 C_it와 Q_f는 두께와 무관하다고 보았습니다(n_interface = C_it/C_ox는 t_ox에 비례). 분할 곡선은 데모와 같은 진짜·잡음 모델로 만들었습니다.
+- **판정.** 이 저장소의 결론이 저자의 공개 데모 모델에서도 그대로 나옵니다. 수평 VD·L 시험은 수직 구조 모호성을 가르지 못하고, 모호성마다 맞는 두께 분할이 그것을 가릅니다. 시뮬레이터 구현에 묶이지 않는 구조적 결론이라는 근거입니다. 수치를 DEVSIM 결과와 직접 비교하지는 않습니다.
+
 ---
 
 ## 4. 해석 범위와 한계
@@ -655,6 +697,7 @@ G. Jeong et al., arXiv:2609.12184 v2. LLM 에이전트가 Sentaurus TCAD 보정 
 - **선형 분석:** Fisher·σ_pred는 Step-5 근방 선형화이며 σ에 정비례합니다. 그래서 핵심 결론은 비선형 계산(E5, E9, E12, E13, E19)으로 따로 확인했습니다.
 - **속도:** adjoint의 바이어스점당 속도 이점은 4–8배로 작습니다(헤드라인으로 쓰지 않음).
 - **기울기 용어:** ∂F/∂θ는 수렴해에서 잔차 조립을 차분해 얻습니다(기호 미분 아님). 따라서 "exact gradient"라고 부르지 않습니다.
+- **공개 데모(E22):** 데모는 해석적 compact model과 합성 데이터입니다. 두께 분할의 물리 가정(C_it·Qf가 두께와 무관)과 계면 트랩 항을 미지수로 둔 확장은 이 저장소에서 정한 것입니다. 컨트롤러 결과는 데모의 규칙과 임계값에 의존합니다.
 - **논문 결론과의 관계:** 이 결과는 논문 모델의 예측력(전달성)을 부정하지 않습니다. 반박 대상은 "전달 시험 통과 → 모호성 감소"라는 연결과, 개별 descriptor 변화(ND,eff 감소 등)를 공정 해석에 쓰는 것입니다.
 - **실측 쪽 결론의 강도:** 실측 등가는 σ_eff(판독 σ의 6배) 기준입니다. 판독 σ 0.02 dec 기준이라면 같은 χ² 차이가 최대 44.7이 됩니다. 범위도 쌍둥이(1000배)보다 좁은 160배입니다. 따라서 실측 결과는 "같은 방향의 결론이 모델 오차를 감안한 기준에서도 나온다"로 읽어야 합니다.
 
@@ -666,6 +709,7 @@ C4 점검(2026-10-24, 아래 6.3)에서 "산화물 TFT TCAD 보정에서 드레�
   - Jeong et al.(arXiv:2609.12184)은 초록에서 비유일성을 인정합니다: "Multiple physical models and parameter sets can reproduce the same measured transfer characteristics, while local fitting alone cannot uniquely identify the underlying device physics."
   - 그러면서 VD·L 시험 결과를 "transferability across bias and geometry, rather than another local parameter fit"의 근거로 쓰고(III절), 그림 1 설명에서 워크플로가 "reduces model/parameter ambiguity"라고 씁니다. 이 연구가 정량으로 반박하는 것은 이 연결입니다. 논문 모델의 예측력(전달성)은 반박 대상이 아닙니다.
   - 논문의 4%-W 재보정 Step 2는 게이트 WF(4.00 → 4.45 eV)와 Qf(+1.59×10¹⁰ → −1.00×10¹² cm⁻²)를 함께 바꿨습니다(IV절). 게이트 산화막이 하나면 두 descriptor는 정확히 축퇴되므로(3.2), 그 배분은 데이터로 정해지지 않습니다.
+  - 저자의 공개 데모 문서도 φ_G와 Q_f가 조합만 식별된다고 밝힙니다. E22(3.10)는 그 범위와 예측 영향, 그것을 가르는 시험(t_ox 분할), 그리고 계면 트랩–tail state 축퇴와 t_ch 분할을 같은 데모 모델에서 정량화했습니다.
 - **가장 가까운 연구:**
   - 산화물 TFT 역문제의 다가성: M. Kimura et al., *Adv. Intell. Syst.* 2026, doi:10.1002/aisy.70437. a-IGZO TFT 파라미터 역추정의 multivaluedness를 tandem 신경망으로 다룹니다. 검증 시험과 측정 설계는 다루지 않습니다.
   - 초박막 채널에서 계면·벌크 donor 분리의 어려움: S. Subhechha et al., SISPAD 2025(imec). 본문 III절에 "The ultrathin channel hinders separating the contribution of donor states in a-IGZO from those of interface states"라고 쓰고, donor를 계면에만 둡니다. 이 연구의 ND,eff ≈ 계면 면전하 보상(3.8)과 같은 직관입니다. 이 연구는 그것을 정량화하고 전달 시험과 연결합니다.
@@ -691,9 +735,9 @@ C4 점검(2026-10-24, 아래 6.3)에서 "산화물 TFT TCAD 보정에서 드레�
 |---|---|---|
 | H1 보정 데이터만으로는 파라미터가 정해지지 않는다 | 입증 | E3, E5, E8, E12 |
 | H2 전달 시험이 모호성을 줄이지 못한다 | 쌍둥이에서는 엄밀히 입증. 드레인 바이어스 시험 곡선(L = 1 µm)을 보정에 함께 넣어도 유지(쌍둥이 1000배, 실측 약 160배). VD 0.02–3 V, L 0.5–10 µm로 넓혀도 유지(E19). 실측은 상대 비교(우리 모델의 전달 오차가 논문보다 큼, 디지타이즈 전달 시험 곡선은 100 nA 부근에 공백, 중간 VD 곡선은 on 영역 위주) | E14, E18, E19 |
-| H3 등가 세트는 물리적으로 다르고, 설계된 측정(두께, C–V)으로 풀린다 | 예측으로 입증, 측정 검증 없음. 두께 범위 전체(t_ox 5–20 nm, t_IWO 2–10 nm)에서 성립(E19, 선형). 다른 시뮬레이터 교차 확인 대기([6.5](#65-병행--다른-시뮬레이터-교차-확인)) | E9, E13, E19 |
+| H3 등가 세트는 물리적으로 다르고, 설계된 측정(두께, C–V)으로 풀린다 | 예측으로 입증, 측정 검증 없음. 두께 범위 전체(t_ox 5–20 nm, t_IWO 2–10 nm)에서 성립(E19, 선형). 저자 공개 데모 모델에서도 t_ox 곡선 1개가 φ_G–Q_f를, t_ch 곡선 1개가 계면 트랩–tail state를 가름(E22). 다른 시뮬레이터 교차 확인 대기([6.5](#65-병행--다른-시뮬레이터-교차-확인)) | E9, E13, E19, E22 |
 | H4 공정 해석(개별 descriptor 변화)이 유일하지 않다 | ND,eff·꼬리 폭은 입증. 논문 4%-W 재보정의 게이트 WF·Qf 동시 변경도 단일 t_ox에서는 정확히 축퇴(5장). DOS "조합"의 변화와는 부합(2%-W 데이터가 4%-W 조합을 더 강하게 기각) | E3, E4, E12, E15, E17 |
-| H5 시뮬레이터·재료 가정·최적화 경로와 무관하다 | 재료 상수 두 개(Nc, ε_ch)와 보정 시작점 4개(평가 40회)에서는 유지 확인: Nc·ε_ch를 바꿔도 등가 유지(E16, E21). 시작점 4개 모두 v3보다 낮은 χ²를 찾지 못해 기준점과 비식별 결론이 그대로이고, v2·v3까지 여섯 자유 보정이 모두 등가인데 DOS가 크게 다름(N_TA 약 270배) → 파라미터 값은 시작점에 좌우됨(E21). 다른 시뮬레이터 확인 대기 | E3c, E16, E21 |
+| H5 시뮬레이터·재료 가정·최적화 경로와 무관하다 | 재료 상수 두 개(Nc, ε_ch)와 보정 시작점 4개(평가 40회)에서는 유지 확인: Nc·ε_ch를 바꿔도 등가 유지(E16, E21). 시작점 4개 모두 v3보다 낮은 χ²를 찾지 못해 기준점과 비식별 결론이 그대로이고, v2·v3까지 여섯 자유 보정이 모두 등가인데 DOS가 크게 다름(N_TA 약 270배) → 파라미터 값은 시작점에 좌우됨(E21). 저자 공개 데모(해석 모델)에서도 같은 구조적 결론과 경로 의존성(trust radius에 따라 Q_f 5.7–10×10¹²)을 확인(E22). 다른 시뮬레이터(Sentaurus 등) 확인 대기 | E3c, E16, E21, E22 |
 
 ### 6.2 1단계 — 가설검증 마무리
 
@@ -736,6 +780,15 @@ C4 점검(2026-10-24, 아래 6.3)에서 "산화물 TFT TCAD 보정에서 드레�
 - 남은 보완(선택):
   - 다중 시작점 도착점들의 두께·C–V 예측(E13 방식)은 계산하지 않았습니다. 도착점이 다른 두 자유 보정 v2·v3의 차이(E13: t_IWO 7 nm 376 mV)가 같은 현상을 이미 보여 줍니다.
   - 평가 횟수를 늘리면 도착점이 골짜기를 따라 더 움직일 수 있습니다.
+
+#### E22 공개 데모 모호성 분석 — 완료(2026-10-25)
+
+- 결과는 3.10절과 `results/e22/summary.md`에 있습니다.
+- 구현: `scripts/e22_demo_ambiguity.py`. 데모 패키지를 import하고, 두께 조건을 가진 `GeoCondition`과 `GeoSimulator`(데모 `CompactTFT`에 조건별 t_ox·t_ch 적용)를 더했습니다. 데모의 `Workspace`·`Controller`는 그대로 썼고, 활성화 판정에 joint-reach OR 조건을 더한 `JointReachController`만 새로 만들었습니다. 그림은 `scripts/fig_e22_demo.py`입니다.
+- 실행: 데모 전용 Python 3.11 환경(7장)에서 약 2분. 결과는 결정적입니다. 두 번 실행한 `summary.json`이 같았고, 그림도 바이트 단위로 같습니다.
+- 남은 보완(선택):
+  - 데모의 활성화 임계값(15 %, persistence 2회, stall 1 %)을 바꿨을 때 모델 선택이 어떻게 달라지는지는 보지 않았습니다.
+  - C–V는 데모 모델에 없어 다루지 않았습니다.
 
 #### (선택) 모델 구조 개선
 
@@ -826,6 +879,13 @@ pip install -r requirements.txt        # 검증 환경: Python 3.13.16, Linux x8
 - DEVSIM은 import할 때 BLAS/LAPACK 라이브러리를 찾습니다. `requirements.txt`의 `mkl`(Intel MKL, x86-64 전용)이 그 역할을 합니다. MKL을 쓸 수 없는 환경에서는 BLAS/LAPACK 라이브러리를 설치하고 환경변수 `DEVSIM_MATH_LIBS`로 지정해야 합니다(DEVSIM 문서 참고). 검증은 MKL로만 했습니다.
 - DEVSIM 기본 직접 솔버(MKL PARDISO)는 일부 예제에서 실패합니다. 그래서 DEVSIM 휠에 들어 있는 UMFPACK shim(`devsim.umfpack`)을 기본으로 씁니다(`TFT(..., solver="umfpack")`). 따로 설치할 것은 없습니다.
 - 스크립트는 모두 레포 루트에서 실행합니다(입력 파일 경로가 루트 기준).
+- E22만 별도 환경이 필요합니다. 기준 논문 저자의 공개 데모를 설치해 import하기 때문이고, 데모는 Python 3.11 버전 고정 파일을 씁니다.
+
+  ```bash
+  git clone https://github.com/gyulab/agentic-TCAD-calibration-public demo && git -C demo checkout ccaa678
+  python3.11 -m venv demo_venv
+  demo_venv/bin/pip install -r demo/requirements-lock.txt && demo_venv/bin/pip install -e demo --no-deps
+  ```
 
 ## 8. 데이터 출처
 
@@ -898,6 +958,8 @@ python scripts/digitize_check.py     # 판독점을 원 그림 위에 겹쳐 그
 | `scripts/e19_design_rule.py` | E19 일반 규칙: 수평·바이어스 시험 16개 대 수직 구조 시험 16개의 선형 판정(σ_pred/σ, λ_max, q, 1σ 감소)과 E5 세트의 수평 시험 비선형 확인. `--report`는 시뮬레이션 없음 | `results/e19` |
 | `scripts/e20_identifiability_table.py` | E20 실측 결합 최적점(E18)에서 descriptor별 Fisher 1σ: 보정 데이터만 대 추천 측정(t_ox 14 nm, t_IWO 7 nm, C–V) 추가, 쌍둥이 값과 비교. `--report`는 시뮬레이션 없음 | `results/e20` |
 | `scripts/e21_report.py` | E21 강건성 표: ε_ch = 15로 다시 보정한 ND,eff 양 끝의 비교, 시작점이 다른 자유 보정들의 도착점 비교(시뮬레이션 없음) | `results/e21` |
+| `scripts/e22_demo_ambiguity.py` | E22 기준 논문 저자의 공개 데모(설치해 import, 수정 없음)에서 φ_G–Q_f 영공간과 그 예측 영향, Q_f·N_tail profile, 데모 컨트롤러의 경로 의존성, 계면 트랩 항을 미지수로 둘 때의 모델 선택. 데모 전용 환경 필요(7장) | `results/e22` |
+| `scripts/fig_e22_demo.py` | E22 3패널 그림(`results/e22/summary.json`만 읽음) | `results/e22/fig_e22_demo.png` |
 | `scripts/make_crosscheck_package.py` | 다른 시뮬레이터 교차 확인용 세트 표(E5·E8·E9 결과로 생성, 시뮬레이션 없음) | `results/crosscheck/` |
 | `scripts/aux_paosah_1d.py` | 보조 분석: 1차원 적층 + Pao–Sah 전류 교과서 모델(numpy만 사용). VD·L 시험이 정보를 더하지 않는 이유의 해석적 근거, Step-5와 E5 세트를 2D 결과와 비교 | `results/aux_paosah_1d` |
 | `scripts/digitize_utils.py` | 벡터 그림 경로·WebPlotDigitizer CSV를 meas.csv 형식으로 바꾸는 초기 도구. 이 논문 그림은 비트맵이라 최종 데이터에는 쓰지 않음 | – |
@@ -1005,6 +1067,10 @@ python scripts/e11_calibrate_measured.py --set 2W --start results/e21_multistart
 python scripts/e11_calibrate_measured.py --set 2W --start results/e12_nd/log10_nd_eff_16.85/summary.json --max_nfev 40 --out results/e21_multistart/low_nd   # 약 27분
 python scripts/e21_report.py                                                                        # 수 초 → results/e21
 python scripts/e14_transfer_test_audit.py                                                           # 강건성 표에 ε_ch 행 추가
+
+# E22 공개 데모 모호성 분석 (2026-10-25): 데모 전용 환경(7장)에서 실행
+demo_venv/bin/python -I scripts/e22_demo_ambiguity.py --demo demo --out results/e22                # 약 2분
+python scripts/fig_e22_demo.py                                                                      # 수 초
 ```
 
 시뮬레이션 없이 다시 만들 수 있는 결과(저장된 결과에서 바이트 단위로 같게 재생성됨을 확인):
@@ -1027,6 +1093,7 @@ python scripts/e20_identifiability_table.py --report --out results/e20
 python scripts/e21_report.py
 python scripts/fig_kcs_abstract.py
 python scripts/paper_numbers.py
+python scripts/fig_e22_demo.py
 ```
 
 참고:
