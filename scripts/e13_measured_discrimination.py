@@ -1,7 +1,7 @@
 """E13 - are the parameter sets that fit the MEASURED data equally well physically different?
 
 E12 re-fitted our model to the measured 2 %-W calibration curves with ND,eff fixed between
-10^16.85 and 10^19.05 cm^-3: all sets fit equally well (Δχ²_eff ≤ 1.26 against the best free fit
+10^16.85 and 10^19.05 cm^-3: all sets fit equally well (Δχ²_eff ≤ 1.27 against the best free fit
 e11_2W_v3; ≤ 0.77 against the reference used before e11_2W_v3 existed) and predict nearly the same
 Vth on the paper's transfer tests (drain bias VD = 0.1/0.2/0.5 V, channel length L = 2 µm). This script
 asks whether those sets nevertheless predict different results for measurements outside the paper's

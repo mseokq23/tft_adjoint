@@ -103,7 +103,7 @@
   {
     "group": "B twin",
     "key": "twin_joint_max",
-    "text": "twin, five VD curves calibrated together: \u03c7\u00b2 \u2264 0.644 over \u00d71000",
+    "text": "twin, five VD curves calibrated together: \u03c7\u00b2 \u2264 0.645 over \u00d71000",
     "value": 0.6444719824962521,
     "source": "results/e18/summary.json (twin_joint)",
     "note": ""
@@ -122,7 +122,7 @@
   {
     "group": "C measured",
     "key": "meas_profile_max",
-    "text": "measured profile: ND,eff 10^16.85\u201310^19.05 (\u00d7158), \u0394\u03c7\u00b2_eff \u2264 1.26 (\u03c7\u00b2_min 1589.4, \u03c3_eff 0.1189 dec)",
+    "text": "measured profile: ND,eff 10^16.85\u201310^19.05 (\u00d7158), \u0394\u03c7\u00b2_eff \u2264 1.27 (max 1.264; \u03c7\u00b2_min 1589.4, \u03c3_eff 0.1189 dec)",
     "value": 1.2644217489607392,
     "source": "results/e12_nd/summary.json",
     "note": ""
@@ -247,7 +247,7 @@
   {
     "group": "D design rule",
     "key": "e19_ratio",
-    "text": "32 tests, predictive \u03c3 / noise (curve RMS): VD (L 1 \u00b5m) 0.25\u20130.41, L 0.43\u20130.86, t_ox 41\u2013210, t_IWO 92\u2013487",
+    "text": "32 tests, predictive \u03c3 / noise (curve RMS): VD (L 1 \u00b5m) 0.25\u20130.41, L 0.43\u20130.86, t_ox 40.6\u2013210, t_IWO 92.2\u2013487",
     "value": {
       "VD (L 1 \u00b5m)": [
         0.25343876228183737,
@@ -299,5 +299,77 @@
     },
     "source": "results/e20/summary.json (measured)",
     "note": "local values; strongly point dependent"
+  },
+  {
+    "group": "E open demo",
+    "key": "demo_default_run",
+    "text": "demo default run reproduced: J 20.77 \u2192 0.407, held-out max |\u0394Vth| 16.9/17.0 mV (drain/length)",
+    "value": 0.406884,
+    "source": "results/e22/summary.json (default_run)",
+    "note": "demo commit ccaa678"
+  },
+  {
+    "group": "E open demo",
+    "key": "demo_null_valley",
+    "text": "\u03c6G\u2013Qf null (63.3 mV per 1e12 cm\u207b\u00b2): Qf 4.47\u201310.00 \u00d71e12, \u03c6G 4.20\u20134.55 eV give the same J; Vth spread VD/L tests 0.000 mV, t_ox 14 nm 350 mV",
+    "value": [
+      4473990963348.401,
+      10000000000000.0
+    ],
+    "source": "results/e22/summary.json (A_null_phiG_Qf, B_valley_prediction_spread)",
+    "note": ""
+  },
+  {
+    "group": "E open demo",
+    "key": "demo_endpoints",
+    "text": "demo set, 15 controller runs: held-out max |\u0394Vth| 15.93\u201317.24 mV, end-point Qf 5.7324\u201310.0000 \u00d71e12 (truth 6), t_ox 20 nm Vth error -498.98 to 4.76 mV",
+    "value": {
+      "heldout": [
+        15.927905340398896,
+        17.243999120126475
+      ],
+      "Qf_1e12": [
+        5.732360073485867,
+        10.0
+      ],
+      "tox20": [
+        -498.9798862677406,
+        4.76028853488164
+      ]
+    },
+    "source": "results/e22/summary.json (D_controller_runs)",
+    "note": "trust radius 0.3\u20130.7 \u00d7 three starting gate WFs"
+  },
+  {
+    "group": "E open demo",
+    "key": "demo_endpoints_tox",
+    "text": "+ t_ox 14 nm curve, 15 controller runs: held-out max |\u0394Vth| 11.66\u201313.03 mV, end-point Qf 5.6196\u20135.6711 \u00d71e12 (truth 6), t_ox 20 nm Vth error 11.17 to 14.34 mV",
+    "value": {
+      "heldout": [
+        11.657535192160672,
+        13.025757525191139
+      ],
+      "Qf_1e12": [
+        5.619593163791691,
+        5.671092036181082
+      ],
+      "tox20": [
+        11.168212538402944,
+        14.340156280245653
+      ]
+    },
+    "source": "results/e22/summary.json (D_controller_runs)",
+    "note": "trust radius 0.3\u20130.7 \u00d7 three starting gate WFs"
+  },
+  {
+    "group": "E open demo",
+    "key": "demo_cit_tail",
+    "text": "interface term C_it unknown: N_tail 1e+16\u20132.45e+19 equivalent at one t_ch; SS spread t_ch 7 nm 33.3 mV/dec, t_ox splits 0.000",
+    "value": [
+      1e+16,
+      2.447967975210728e+19
+    ],
+    "source": "results/e22/summary.json (E_cit_vs_tail)",
+    "note": "extension: the demo fixes C_it/C_ox = 0.10"
   }
 ]
