@@ -150,7 +150,9 @@ def main():
         f"{min(rec_t):.0f}–{max(rec_t):.0f}", [min(pap_t), max(pap_t), min(rec_t), max(rec_t)], "results/e14/summary.json (linear)")
     e20 = load("results/e20/summary.json")["measured"]
     add("D design rule", "e20_nd", f"measured optimum (local, linear): ND,eff 1σ calibration only {e20['joint (5 VD, E18)']['log10_nd_eff']:.2f} dec "
-        f"(2 curves {e20['pair (VD 0.05/1 V)']['log10_nd_eff']:.2f}); + t_ox 14 nm, t_IWO 7 nm, C–V 0.5 %: "
+        f"(2 curves {e20['pair (VD 0.05/1 V)']['log10_nd_eff']:.2f}); + C–V 0.5 % of the same device only: "
+        f"{e20['joint + C–V (0.5 %)']['log10_nd_eff']:.3f} dec (2 %: {e20['joint + C–V (2 %)']['log10_nd_eff']:.3f}); "
+        "+ t_ox 14 nm, t_IWO 7 nm, C–V 0.5 %: "
         f"{e20['joint + all three']['log10_nd_eff']:.3f} dec (C–V 2 %: {e20['joint + all three (C–V 2 %)']['log10_nd_eff']:.3f})",
         {k: e20[k]["log10_nd_eff"] for k in e20}, "results/e20/summary.json (measured)", "local values; strongly point dependent")
 

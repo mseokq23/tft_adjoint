@@ -45,7 +45,7 @@ Bounds written as ≤ are rounded up at the shown precision.
 |---|---|---|---|
 | e19_ratio | 32 tests, predictive σ / noise (curve RMS): VD (L 1 µm) 0.25–0.41, L 0.43–0.86, t_ox 40.6–210, t_IWO 92.2–487 | results/e19/summary.json (tests.*.rms_ratio) |  |
 | e14_linear | paper's transfer tests 0.25–0.43, recommended tests 32–239 | results/e14/summary.json (linear) |  |
-| e20_nd | measured optimum (local, linear): ND,eff 1σ calibration only 7.30 dec (2 curves 8.00); + t_ox 14 nm, t_IWO 7 nm, C–V 0.5 %: 0.176 dec (C–V 2 %: 0.344) | results/e20/summary.json (measured) | local values; strongly point dependent |
+| e20_nd | measured optimum (local, linear): ND,eff 1σ calibration only 7.30 dec (2 curves 8.00); + C–V 0.5 % of the same device only: 0.315 dec (2 %: 0.717); + t_ox 14 nm, t_IWO 7 nm, C–V 0.5 %: 0.176 dec (C–V 2 %: 0.344) | results/e20/summary.json (measured) | local values; strongly point dependent |
 
 ## E open demo
 

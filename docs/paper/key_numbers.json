@@ -285,7 +285,7 @@
   {
     "group": "D design rule",
     "key": "e20_nd",
-    "text": "measured optimum (local, linear): ND,eff 1\u03c3 calibration only 7.30 dec (2 curves 8.00); + t_ox 14 nm, t_IWO 7 nm, C\u2013V 0.5 %: 0.176 dec (C\u2013V 2 %: 0.344)",
+    "text": "measured optimum (local, linear): ND,eff 1\u03c3 calibration only 7.30 dec (2 curves 8.00); + C\u2013V 0.5 % of the same device only: 0.315 dec (2 %: 0.717); + t_ox 14 nm, t_IWO 7 nm, C\u2013V 0.5 %: 0.176 dec (C\u2013V 2 %: 0.344)",
     "value": {
       "pair (VD 0.05/1 V)": 7.995559565425364,
       "joint (5 VD, E18)": 7.30314188834708,
