@@ -11,7 +11,8 @@ measured-fit sets, design rule) is in the git history (commit 645f871).
     L = 0.5–10 µm) and vertical-structure tests (t_ox 5–20 nm, channel t_ch = t_IWO 2–10 nm)
 (c) resolve step on the authors' open demo (E22): end points of the demo's own controller (trust radius 0.3–0.7,
     three starting gate work functions; 15 runs each) with the demo calibration set and with one t_ox = 14 nm
-    curve added: largest held-out VD / L error against the Vth error predicted for a t_ox = 20 nm device
+    curve added: largest error on the demo's held-out (transfer) VD / L tests against the Vth error predicted for
+    a t_ox = 20 nm device
 
 Usage:  python scripts/fig_kcs_abstract.py [--out results/fig_kcs_abstract.png]
 """
@@ -121,7 +122,7 @@ def panel_design(b, rng):
                color=INK if x0 == 2 else INK2)
     b.set_xlim(-0.55, len(groups) - 0.45)
     b.set_ylabel(r"predictive $\sigma$ / test noise")
-    b.set_title("(b) design: 32 tests (DEVSIM twin)", loc="left", color=INK, fontsize=6.8)
+    b.set_title("(b) design: 32 tests (DEVSIM, synthetic)", loc="left", color=INK, fontsize=6.8)
     style(b)
     b.grid(False, axis="x")
 
@@ -149,7 +150,7 @@ def panel_resolve(c):
     c.axhline(0.0, color=MUTED, lw=0.6, zorder=1)
     c.set_xlim(10.5, 18.5)
     c.set_ylim(-560, 80)
-    c.set_xlabel(r"largest held-out $|\Delta V_{\rm th}|$, $V_{\rm D}$ and $L$ (mV)")
+    c.set_xlabel(r"largest transfer-test $|\Delta V_{\rm th}|$, $V_{\rm D}$ and $L$ (mV)")
     c.set_ylabel(r"$V_{\rm th}$ error, $t_{\rm ox}$ = 20 nm device (mV)")
     c.set_title("(c) resolve: open demo [6], 15 runs", loc="left", color=INK, fontsize=6.8)
     c.legend(loc="lower left", frameon=False, handletextpad=0.3, borderaxespad=0.2)
