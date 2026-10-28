@@ -711,8 +711,8 @@ C4 점검(2026-10-24, 아래 6.3)에서 "산화물 TFT TCAD 보정에서 드레�
   - 논문의 4%-W 재보정 Step 2는 게이트 WF(4.00 → 4.45 eV)와 Qf(+1.59×10¹⁰ → −1.00×10¹² cm⁻²)를 함께 바꿨습니다(IV절). 게이트 산화막이 하나면 두 descriptor는 정확히 축퇴되므로(3.2), 그 배분은 데이터로 정해지지 않습니다.
   - 저자의 공개 데모 문서도 φ_G와 Q_f가 조합만 식별된다고 밝힙니다. E22(3.10)는 그 범위와 예측 영향, 그것을 가르는 시험(t_ox 분할), 그리고 계면 트랩–tail state 축퇴와 t_ch 분할을 같은 데모 모델에서 정량화했습니다.
 - **가장 가까운 연구:**
-  - 산화물 TFT 역문제의 다가성: M. Kimura et al., *Adv. Intell. Syst.* 2026, doi:10.1002/aisy.70437. a-IGZO TFT 파라미터 역추정의 multivaluedness를 tandem 신경망으로 다룹니다. 검증 시험과 측정 설계는 다루지 않습니다.
-  - 초박막 채널에서 계면·벌크 donor 분리의 어려움: S. Subhechha et al., SISPAD 2025(imec). 본문 III절에 "The ultrathin channel hinders separating the contribution of donor states in a-IGZO from those of interface states"라고 쓰고, donor를 계면에만 둡니다. 이 연구의 ND,eff ≈ 계면 면전하 보상(3.8)과 같은 직관입니다. 이 연구는 그것을 정량화하고 전달 시험과 연결합니다.
+  - 산화물 TFT 역문제의 다가성: M. Kimura et al., *Adv. Intell. Syst.* 8, e70437 (2026), doi:10.1002/aisy.70437. a-IGZO TFT 파라미터 역추정의 multivaluedness를 tandem 신경망으로 다룹니다. 검증 시험과 측정 설계는 다루지 않습니다.
+  - 초박막 채널에서 계면·벌크 donor 분리의 어려움: S. Subhechha et al., SISPAD 2025(imec), doi:10.1109/SISPAD66650.2025.11186376. 본문 III절에 "The ultrathin channel hinders separating the contribution of donor states in a-IGZO from those of interface states"라고 쓰고, donor를 계면에만 둡니다. 이 연구의 ND,eff ≈ 계면 면전하 보상(3.8)과 같은 직관입니다. 이 연구는 그것을 정량화하고 전달 시험과 연결합니다.
   - 두께 분할·C–V로 계면/벌크 트랩 분리: S. Choi et al., *IEEE EDL* vol. 40, no. 4(채널 두께 분할; 쪽수·DOI 미확인), W. Chen et al., *Materials* 11, 416, 2018(저주파 C–V + I–V, IZO TFT), D.-H. Lee et al., *Coatings* 11, 1135, 2021(비교). 우리 추천 측정(3.5)과 같은 방향의 기존 추출법이며, 이 연구는 이를 식별가능성 지표로 정당화합니다.
   - donor ≡ acceptor + 고정전하 항등: 같은 항등을 계면 트랩 모델링에 쓴 예가 있습니다(S. P. Jana, S. Gupta, A. K. Gupta, arXiv:2303.13902, MoS₂ FET). 단색광 photonic C–V로 donor/acceptor형 DOS를 따로 추출했다는 보고도 있습니다(H. Bae et al., *SID Digest* 44, 1033, 2013; 방법 세부는 본문 미확인). 그래서 E8은 "알려진 항등을 이 descriptor 클래스에 적용하고 기계 정밀도로 확인한 것"으로 씁니다.
   - compact model의 Bayesian 보정·최적 바이어스 선택: L. Yu et al., *IEEE TCAD* 35(7), 1138, 2016. 물리 TCAD descriptor가 아니라 compact model 파라미터입니다.
